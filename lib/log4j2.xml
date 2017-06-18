@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<!--
+		<logger name="com.amazonaws.metrics.AwsSdkMetrics" level="warn" />
+		<logger name="org.apache.http.client.protocol.RequestAddCookies" level="warn" />
+		<logger name="org.apache.http.client.protocol.RequestAuthCache" level="warn" />
+		<logger name="org.apache.http.impl.conn.PoolingHttpClientConnectionManager" level="warn" />
+		<logger name="org.apache.http.impl.execchain.MainClientExec" level="warn" />
+		<logger name="org.apache.http.impl.conn.DefaultHttpClientConnectionOperator" level="warn" />
+		<logger name="com.amazonaws.http.conn.ssl.SdkTLSSocketFactory" level="warn" />
+		<logger name="com.amazonaws.internal.SdkSSLSocket" level="warn" />
+		<logger name="org.apache.http.impl.conn.DefaultManagedHttpClientConnection" level="warn" />
+		<logger name="org.apache.http.headers" level="warn" />
+		<logger name="org.apache.http.wire" level="warn" />
+		<logger name="com.amazonaws.opensdk.internal.protocol.ApiGatewayErrorResponseHandler" level="warn" />
+		-->
+	
+		<Root level="trace">
+			<AppenderRef ref="Console" />
+		</Root>
+	</Loggers>
+</Configuration>
