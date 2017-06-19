@@ -6,7 +6,6 @@
 		</Console>
 	</Appenders>
 	<Loggers>
-		<!--
 		<logger name="com.amazonaws.metrics.AwsSdkMetrics" level="warn" />
 		<logger name="org.apache.http.client.protocol.RequestAddCookies" level="warn" />
 		<logger name="org.apache.http.client.protocol.RequestAuthCache" level="warn" />
@@ -19,7 +18,6 @@
 		<logger name="org.apache.http.headers" level="warn" />
 		<logger name="org.apache.http.wire" level="warn" />
 		<logger name="com.amazonaws.opensdk.internal.protocol.ApiGatewayErrorResponseHandler" level="warn" />
-		-->
 	
 		<Root level="trace">
 			<AppenderRef ref="Console" />

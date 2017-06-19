@@ -12,10 +12,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
+import net.otaupdate.app.model.DeviceWrapper;
+import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.GetOrganizationCallback;
 import net.otaupdate.app.model.OrganizationWrapper;
-import net.otaupdate.app.sdk.model.OrganizationArrayItem;
+import net.otaupdate.app.model.ProcessorWrapper;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -30,7 +32,13 @@ public class OtaTreeView extends JPanel
 
 	public interface OtaTreeViewListener
 	{
-		public void onOrganizationSelected(OrganizationArrayItem orgIn);
+		public void onOrganizationSelected(OrganizationWrapper orgIn);
+		
+		public void onDeviceSelected(DeviceWrapper devIn);
+		
+		public void onProcessorSelected(ProcessorWrapper procIn);
+		
+		public void onFirmwareImageSelected(FwImageWrapper fwImageIn);
 		
 		public void onDeselection();
 	}
@@ -59,7 +67,19 @@ public class OtaTreeView extends JPanel
 				
 				if( (node != null) && (node.getUserObject() instanceof OrganizationWrapper) )
 				{
-					OtaTreeView.this.notifyListeners_orgSelect(((OrganizationWrapper)node.getUserObject()).getModelObject());
+					OtaTreeView.this.notifyListeners_orgSelect(((OrganizationWrapper)node.getUserObject()));
+				}
+				else if( (node != null) && (node.getUserObject() instanceof DeviceWrapper) )
+				{
+					OtaTreeView.this.notifyListeners_devSelect(((DeviceWrapper)node.getUserObject()));
+				}
+				else if( (node != null) && (node.getUserObject() instanceof ProcessorWrapper) )
+				{
+					OtaTreeView.this.notifyListeners_procSelect(((ProcessorWrapper)node.getUserObject()));
+				}
+				else if( (node != null) && (node.getUserObject() instanceof FwImageWrapper) )
+				{
+					OtaTreeView.this.notifyListeners_fwSelect(((FwImageWrapper)node.getUserObject()));
 				}
 				else
 				{
@@ -119,9 +139,32 @@ public class OtaTreeView extends JPanel
 				}
 				else
 				{
-					for( OrganizationWrapper currItem : items )
+					for( OrganizationWrapper currOrg : items )
 					{
-						OtaTreeView.this.organizations.add(new DefaultMutableTreeNode(currItem));
+						DefaultMutableTreeNode orgNode = new DefaultMutableTreeNode(currOrg);
+						
+						for( DeviceWrapper currDevice : currOrg.getDevices() )
+						{
+							DefaultMutableTreeNode devNode = new DefaultMutableTreeNode(currDevice);
+							
+							for( ProcessorWrapper currProc : currDevice.getProcessors() )
+							{
+								DefaultMutableTreeNode procNode = new DefaultMutableTreeNode(currProc);
+								
+								for( FwImageWrapper currFwImage : currProc.getFirmwareImages() )
+								{
+									DefaultMutableTreeNode fwNode = new DefaultMutableTreeNode(currFwImage);
+									
+									procNode.add(fwNode);
+								}
+								
+								devNode.add(procNode);
+							}
+							
+							orgNode.add(devNode);
+						}
+						
+						OtaTreeView.this.organizations.add(orgNode);
 					}
 				}
 				
@@ -146,11 +189,38 @@ public class OtaTreeView extends JPanel
 	}
 	
 	
-	private void notifyListeners_orgSelect(OrganizationArrayItem orgIn)
+	private void notifyListeners_orgSelect(OrganizationWrapper aiIn)
 	{
 		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
 		{
-			currListener.onOrganizationSelected(orgIn);
+			currListener.onOrganizationSelected(aiIn);
+		}
+	}
+	
+	
+	private void notifyListeners_devSelect(DeviceWrapper aiIn)
+	{
+		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
+		{
+			currListener.onDeviceSelected(aiIn);
+		}
+	}
+	
+	
+	private void notifyListeners_procSelect(ProcessorWrapper aiIn)
+	{
+		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
+		{
+			currListener.onProcessorSelected(aiIn);
+		}
+	}
+	
+	
+	private void notifyListeners_fwSelect(FwImageWrapper aiIn)
+	{
+		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
+		{
+			currListener.onFirmwareImageSelected(aiIn);
 		}
 	}
 }

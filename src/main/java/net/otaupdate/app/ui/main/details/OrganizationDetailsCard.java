@@ -1,4 +1,4 @@
-package net.otaupdate.app.ui.main.organization;
+package net.otaupdate.app.ui.main.details;
 
 import javax.swing.JPanel;
 import com.jgoodies.forms.layout.FormLayout;
@@ -7,7 +7,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.AddRemoveOrganizationUserCallback;
-import net.otaupdate.app.sdk.model.OrganizationArrayItem;
+import net.otaupdate.app.model.OrganizationWrapper;
 import net.otaupdate.app.sdk.model.OrganizationUserArrayItem;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 
@@ -36,7 +36,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 	private final JTable table;
 	private final OrganizationUsersTableModel tableModel = new OrganizationUsersTableModel();
 	
-	private OrganizationArrayItem org = null;
+	private OrganizationWrapper org = null;
 
 	
 	public OrganizationDetailsCard()
@@ -123,7 +123,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 	}
 
 	
-	public void setOrganization(OrganizationArrayItem orgIn)
+	public void setOrganization(OrganizationWrapper orgIn)
 	{
 		this.org = orgIn;
 		this.refreshUi();
@@ -133,7 +133,6 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 	@Override
 	public void onBecomesVisible()
 	{
-		System.out.println("org visible");
 		this.refreshUi();
 	}
 
@@ -142,9 +141,9 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 	{
 		if( this.org == null ) return;
 		
-		this.txtName.setText(this.org.getName());
-		this.lblUuidValue.setText(this.org.getUuid());
-		this.tableModel.refreshForOrganizationUuid(this.org.getUuid());
+		this.txtName.setText(this.org.getModelObject().getName());
+		this.lblUuidValue.setText(this.org.getModelObject().getUuid());
+		this.tableModel.refreshForOrganizationUuid(this.org.getModelObject().getUuid());
 	}
 	
 	
@@ -153,7 +152,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 		String emailToAdd = this.txtEmailToAdd.getText();
 		if( emailToAdd.isEmpty() ) return;
 		
-		ModelManager.getSingleton().addUserToOrganization(this.org.getUuid(), this.txtEmailToAdd.getText(),
+		ModelManager.getSingleton().addUserToOrganization(this.org.getModelObject().getUuid(), this.txtEmailToAdd.getText(),
 				new AddRemoveOrganizationUserCallback() {
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
@@ -161,7 +160,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 						if( wasSuccessfulIn )
 						{
 							// refresh our user table
-							OrganizationDetailsCard.this.tableModel.refreshForOrganizationUuid(OrganizationDetailsCard.this.org.getUuid());
+							OrganizationDetailsCard.this.tableModel.refreshForOrganizationUuid(OrganizationDetailsCard.this.org.getModelObject().getUuid());
 						}
 						else
 						{
@@ -172,7 +171,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 					}
 		});
 		
-		this.tableModel.refreshForOrganizationUuid(this.org.getUuid());
+		this.tableModel.refreshForOrganizationUuid(this.org.getModelObject().getUuid());
 	}
 	
 	
@@ -184,7 +183,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 		OrganizationUserArrayItem user = ((OrganizationUsersTableModel)OrganizationDetailsCard.this.table.getModel()).getUserAtIndex(selRow);
 		if( user == null ) return;
 		
-		ModelManager.getSingleton().removeUserFromOrganization(this.org.getUuid(), user.getEmail(),
+		ModelManager.getSingleton().removeUserFromOrganization(this.org.getModelObject().getUuid(), user.getEmail(),
 				new AddRemoveOrganizationUserCallback() {
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
@@ -192,7 +191,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 						if( wasSuccessfulIn )
 						{
 							// refresh our user table
-							OrganizationDetailsCard.this.tableModel.refreshForOrganizationUuid(OrganizationDetailsCard.this.org.getUuid());
+							OrganizationDetailsCard.this.tableModel.refreshForOrganizationUuid(OrganizationDetailsCard.this.org.getModelObject().getUuid());
 						}
 						else
 						{

@@ -1,4 +1,4 @@
-package net.otaupdate.app.ui.main.organization;
+package net.otaupdate.app.ui.main.details;
 
 import java.util.List;
 

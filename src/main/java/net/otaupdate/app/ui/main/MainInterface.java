@@ -5,15 +5,24 @@ import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
+import net.otaupdate.app.model.DeviceWrapper;
+import net.otaupdate.app.model.FwImageWrapper;
+import net.otaupdate.app.model.OrganizationWrapper;
+import net.otaupdate.app.model.ProcessorWrapper;
+import net.otaupdate.app.sdk.model.DeviceArrayItem;
+import net.otaupdate.app.sdk.model.FwImageArrayItem;
 import net.otaupdate.app.sdk.model.OrganizationArrayItem;
+import net.otaupdate.app.sdk.model.ProcessorArrayItem;
 import net.otaupdate.app.ui.cardmanager.CardManager;
 import net.otaupdate.app.ui.cardmanager.CardManager.CardTransitionCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 import net.otaupdate.app.ui.main.OtaTreeView.OtaTreeViewListener;
-import net.otaupdate.app.ui.main.organization.OrganizationDetailsCard;
+import net.otaupdate.app.ui.main.details.DeviceDetailsCard;
+import net.otaupdate.app.ui.main.details.OrganizationDetailsCard;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import net.otaupdate.app.ui.main.details.ProcessorDetailsCard;
 
 
 public class MainInterface extends JPanel implements IntelligentCard, OtaTreeViewListener
@@ -21,6 +30,8 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 	private static final long serialVersionUID = -5699429600721235299L;
 	private static final String CARD_NO_SELECTION = "noSelection";
 	private static final String CARD_ORGANIZATION_DETAILS = "orgDetails";
+	private static final String CARD_DEVICE_DETAILS = "devDetails";
+	private static final String CARD_PROCESSOR_DETAILS = "procDetails";
 	
 	
 	private final CardManager cardManager;
@@ -48,6 +59,12 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 		lblPleaseSelectAn.setHorizontalAlignment(SwingConstants.CENTER);
 		pnlNoSelection.add(lblPleaseSelectAn, BorderLayout.CENTER);
 		
+		DeviceDetailsCard deviceDetailsCard = new DeviceDetailsCard();
+		cardManager.add(deviceDetailsCard, CARD_DEVICE_DETAILS);
+		
+		ProcessorDetailsCard processorDetailsCard = new ProcessorDetailsCard();
+		cardManager.add(processorDetailsCard, CARD_PROCESSOR_DETAILS);
+		
 		otaTreeView = new OtaTreeView();
 		this.otaTreeView.addListener(this);
 		splitPane.setLeftComponent(otaTreeView);
@@ -55,7 +72,7 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 
 
 	@Override
-	public void onOrganizationSelected(OrganizationArrayItem orgIn)
+	public void onOrganizationSelected(OrganizationWrapper orgIn)
 	{
 		this.cardManager.showCard(CARD_ORGANIZATION_DETAILS, new CardTransitionCallback()
 		{
@@ -65,6 +82,41 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 				((OrganizationDetailsCard)newComponentIn).setOrganization(orgIn);
 			}
 		});
+	}
+	
+	
+	@Override
+	public void onDeviceSelected(DeviceWrapper devIn)
+	{
+		this.cardManager.showCard(CARD_DEVICE_DETAILS, new CardTransitionCallback()
+		{
+			@Override
+			public void onCardTransition(Component oldComponentIn, Component newComponentIn)
+			{
+				((DeviceDetailsCard)newComponentIn).setDevice(devIn);
+			}
+		});
+	}
+	
+	
+	@Override
+	public void onProcessorSelected(ProcessorWrapper procIn)
+	{
+		this.cardManager.showCard(CARD_PROCESSOR_DETAILS, new CardTransitionCallback()
+		{
+			@Override
+			public void onCardTransition(Component oldComponentIn, Component newComponentIn)
+			{
+				((ProcessorDetailsCard)newComponentIn).setProcessor(procIn);
+			}
+		});
+	}
+	
+	
+	@Override
+	public void onFirmwareImageSelected(FwImageWrapper fwImageIn)
+	{
+		
 	}
 
 
