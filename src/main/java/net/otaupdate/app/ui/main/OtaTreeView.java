@@ -3,6 +3,7 @@ package net.otaupdate.app.ui.main;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.JTree;
@@ -10,6 +11,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import net.otaupdate.app.model.DeviceWrapper;
@@ -38,7 +40,7 @@ public class OtaTreeView extends JPanel
 		
 		public void onProcessorSelected(ProcessorWrapper procIn);
 		
-		public void onFirmwareImageSelected(FwImageWrapper fwImageIn);
+		public void onFirmwareImageSelected(FwImageWrapper fwImageIn, List<FwImageWrapper> allFwImagesIn);
 		
 		public void onDeselection();
 	}
@@ -79,7 +81,7 @@ public class OtaTreeView extends JPanel
 				}
 				else if( (node != null) && (node.getUserObject() instanceof FwImageWrapper) )
 				{
-					OtaTreeView.this.notifyListeners_fwSelect(((FwImageWrapper)node.getUserObject()));
+					OtaTreeView.this.notifyListeners_fwSelect(((FwImageWrapper)node.getUserObject()), OtaTreeView.this.getAllFirmwaresGivenFirmwareNode(node));
 				}
 				else
 				{
@@ -180,6 +182,23 @@ public class OtaTreeView extends JPanel
 	}
 	
 	
+	private List<FwImageWrapper> getAllFirmwaresGivenFirmwareNode(DefaultMutableTreeNode nodeIn)
+	{
+		TreeNode procNode = nodeIn.getParent();
+		if( procNode == null ) return null;
+		
+		List<FwImageWrapper> retVal = new ArrayList<FwImageWrapper>();
+		Enumeration<?> en = procNode.children();
+		while( en.hasMoreElements() )
+		{
+			Object currObject = ((DefaultMutableTreeNode)en.nextElement()).getUserObject();
+			if( currObject instanceof FwImageWrapper ) retVal.add((FwImageWrapper)currObject);
+		}
+		
+		return retVal;
+	}
+	
+	
 	private void notifyListeners_deselect()
 	{
 		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
@@ -216,11 +235,11 @@ public class OtaTreeView extends JPanel
 	}
 	
 	
-	private void notifyListeners_fwSelect(FwImageWrapper aiIn)
+	private void notifyListeners_fwSelect(FwImageWrapper aiIn, List<FwImageWrapper> allFwImagesIn)
 	{
 		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
 		{
-			currListener.onFirmwareImageSelected(aiIn);
+			currListener.onFirmwareImageSelected(aiIn, allFwImagesIn);
 		}
 	}
 }

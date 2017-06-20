@@ -6,13 +6,12 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.mxgraph.layout.mxFastOrganicLayout;
 import com.mxgraph.layout.mxIGraphLayout;
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ProcessorWrapper;
-import net.otaupdate.app.sdk.model.DeviceArrayItem;
-import net.otaupdate.app.sdk.model.ProcessorArrayItem;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 
 import com.jgoodies.forms.layout.FormSpecs;
@@ -24,6 +23,9 @@ import java.util.Map;
 
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.EtchedBorder;
+import java.awt.Color;
 
 
 public class ProcessorDetailsCard extends JPanel implements IntelligentCard
@@ -74,13 +76,14 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 		lblUuidValue.setHorizontalAlignment(SwingConstants.TRAILING);
 		pnlDevDetails.add(lblUuidValue, "4, 4");
 		
+		fwGraph = new mxGraph();
+		
 		JPanel pnlFwViz = new JPanel();
+		pnlFwViz.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Migration Path Visualization", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		add(pnlFwViz, BorderLayout.CENTER);
 		pnlFwViz.setLayout(new BorderLayout(0, 0));
-		
-		fwGraph = new mxGraph();
 		mxGraphComponent graphComponent = new mxGraphComponent(fwGraph);
-		add(graphComponent);
+		pnlFwViz.add(graphComponent, BorderLayout.CENTER);
 	}
 
 	
@@ -110,9 +113,11 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 	
 	private void setupGraph()
 	{	
-		Object parent = fwGraph.getDefaultParent();
+		this.fwGraph.removeCells(this.fwGraph.getChildCells(this.fwGraph.getDefaultParent(), true, true));
+		
+		Object parent = this.fwGraph.getDefaultParent();
 
-		fwGraph.getModel().beginUpdate();
+		this.fwGraph.getModel().beginUpdate();
 		try
 		{
 			Map<String, Object> uuidToVertices = new HashMap<String, Object>();
@@ -137,11 +142,11 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 		}
 		finally
 		{
-			fwGraph.getModel().endUpdate();
+			this.fwGraph.getModel().endUpdate();
 		}
 		
 		// now do a layout
-		mxIGraphLayout layout = new mxFastOrganicLayout(this.fwGraph);
+		mxIGraphLayout layout = new mxHierarchicalLayout(this.fwGraph);
 		layout.execute(parent);
 	}
 }

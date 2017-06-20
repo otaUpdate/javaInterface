@@ -4,15 +4,12 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.List;
 
 import net.otaupdate.app.model.DeviceWrapper;
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.OrganizationWrapper;
 import net.otaupdate.app.model.ProcessorWrapper;
-import net.otaupdate.app.sdk.model.DeviceArrayItem;
-import net.otaupdate.app.sdk.model.FwImageArrayItem;
-import net.otaupdate.app.sdk.model.OrganizationArrayItem;
-import net.otaupdate.app.sdk.model.ProcessorArrayItem;
 import net.otaupdate.app.ui.cardmanager.CardManager;
 import net.otaupdate.app.ui.cardmanager.CardManager.CardTransitionCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
@@ -23,6 +20,7 @@ import net.otaupdate.app.ui.main.details.OrganizationDetailsCard;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import net.otaupdate.app.ui.main.details.ProcessorDetailsCard;
+import net.otaupdate.app.ui.main.details.FwImageDetailsCard;
 
 
 public class MainInterface extends JPanel implements IntelligentCard, OtaTreeViewListener
@@ -32,6 +30,7 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 	private static final String CARD_ORGANIZATION_DETAILS = "orgDetails";
 	private static final String CARD_DEVICE_DETAILS = "devDetails";
 	private static final String CARD_PROCESSOR_DETAILS = "procDetails";
+	private static final String CARD_FW_DETAILS = "fwDetails";
 	
 	
 	private final CardManager cardManager;
@@ -64,6 +63,9 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 		
 		ProcessorDetailsCard processorDetailsCard = new ProcessorDetailsCard();
 		cardManager.add(processorDetailsCard, CARD_PROCESSOR_DETAILS);
+		
+		FwImageDetailsCard fwImageDetailsCard = new FwImageDetailsCard();
+		cardManager.add(fwImageDetailsCard, CARD_FW_DETAILS);
 		
 		otaTreeView = new OtaTreeView();
 		this.otaTreeView.addListener(this);
@@ -114,9 +116,16 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 	
 	
 	@Override
-	public void onFirmwareImageSelected(FwImageWrapper fwImageIn)
+	public void onFirmwareImageSelected(FwImageWrapper fwImageIn, List<FwImageWrapper> allFwImagesIn)
 	{
-		
+		this.cardManager.showCard(CARD_FW_DETAILS, new CardTransitionCallback()
+		{
+			@Override
+			public void onCardTransition(Component oldComponentIn, Component newComponentIn)
+			{
+				((FwImageDetailsCard)newComponentIn).setFwImage(fwImageIn, allFwImagesIn);
+			}
+		});
 	}
 
 
