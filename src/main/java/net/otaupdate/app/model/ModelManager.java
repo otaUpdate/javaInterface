@@ -1,8 +1,14 @@
 package net.otaupdate.app.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,6 +16,9 @@ import com.amazonaws.opensdk.SdkRequestConfig;
 
 import net.otaupdate.app.AuthorizationManager;
 import net.otaupdate.app.WebServicesCommon;
+import net.otaupdate.app.sdk.model.CreateFwRequest;
+import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest;
+import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult;
 import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidUsersUserEmailRequest;
 import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidUsersUserEmailResult;
 import net.otaupdate.app.sdk.model.DeviceArrayItem;
@@ -27,20 +36,28 @@ import net.otaupdate.app.sdk.model.GetOrgsRequest;
 import net.otaupdate.app.sdk.model.GetOrgsResult;
 import net.otaupdate.app.sdk.model.OrganizationArrayItem;
 import net.otaupdate.app.sdk.model.OrganizationUserArrayItem;
+import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult;
+import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidUsersRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidUsersResult;
 import net.otaupdate.app.sdk.model.ProcessorArrayItem;
+import net.otaupdate.app.sdk.model.UpdateFwRequest;
 import net.otaupdate.app.util.Dispatch;
+import net.otaupdate.app.util.FileBodyWithProgress;
+import net.otaupdate.app.util.FileBodyWithProgress.ProgessFileEntityListener;
 
 
+@SuppressWarnings("serial")
 public class ModelManager
 {
 	private static final ModelManager SINGLETON = new ModelManager();
 	
 	
-	public interface GetOrganizationCallback
+	public interface RefreshTreeCallback
 	{
-		public void onCompletion(boolean wasSuccessfulIn, List<OrganizationWrapper> itemsIn);
+		public void onCompletion(boolean wasSuccessfulIn, List<OrganizationWrapper> organizationsIn);
 	}
 	
 	
@@ -56,6 +73,31 @@ public class ModelManager
 	}
 	
 	
+	public interface CreateUpdateFwImageCallback
+	{
+		public void onCompletion(boolean wasSuccessfulIn, String tempPutUrlIn);
+	}
+	
+	
+	public interface UploadFwImageCallback
+	{
+		public void onProgressUpdate(long totalNumBytesWrittenIn, long totalNumBytesExpected);
+		public void onCompletion(boolean wasSuccessfulIn);
+	}
+
+	
+	public interface UpdateFwImageCallback
+	{
+		public void onCompletion(boolean wasSuccessfulIn);
+	}
+	
+	
+	public interface DeleteFwImageCallback
+	{
+		public void onCompletion(boolean wasSuccessfulIn);
+	}
+	
+	
 	private final Logger logger = LogManager.getLogger(this.getClass());
 	
 	
@@ -64,7 +106,7 @@ public class ModelManager
 	}
 	
 	
-	public void getOrganizations(GetOrganizationCallback cbIn)
+	public void refreshTree(RefreshTreeCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -85,28 +127,31 @@ public class ModelManager
 					// wrap the amazon-provided object nicely
 					for( OrganizationArrayItem currOai : oais )
 					{
-						List<DeviceWrapper> devices = new ArrayList<DeviceWrapper>();
+						OrganizationWrapper org = new OrganizationWrapper(currOai);
+						
 						// fetch the devices for this organization
 						for( DeviceArrayItem currDai : ModelManager.this.getDevicesForOrganization(currOai.getUuid()) )
 						{
-							List<ProcessorWrapper> processors = new ArrayList<ProcessorWrapper>();
+							DeviceWrapper device = new DeviceWrapper(currDai, org);
+							
 							// fetch the processors for this device
 							for( ProcessorArrayItem currPai : ModelManager.this.getProcessorsForDeviceAndOrganization(currDai.getUuid(), currOai.getUuid()) )
 							{
-								List<FwImageWrapper> fwImages = new ArrayList<FwImageWrapper>();
-								// fetch the firmware iamges for this processor
+								ProcessorWrapper proc = new ProcessorWrapper(currPai, device);
+								
+								// fetch the firmware images for this processor
 								for( FwImageArrayItem currFwai : ModelManager.this.getFwImagesForProcessorAndDeviceAndOrganization(currPai.getUuid(), currDai.getUuid(), currOai.getUuid()) )
 								{
-									fwImages.add(new FwImageWrapper(currFwai));
+									proc.addFirmwareImage(new FwImageWrapper(currFwai, proc));
 								}
 								
-								processors.add(new ProcessorWrapper(currPai, fwImages));
+								device.addProcessor(proc);
 							}
 							
-							devices.add(new DeviceWrapper(currDai, processors));
+							org.addDevice(device);
 						}
-						
-						organizations.add(new OrganizationWrapper(currOai, devices));
+
+						organizations.add(org);
 					}
 					
 					wasSuccessful = true;
@@ -179,7 +224,7 @@ public class ModelManager
 							));
 					
 					// if we made it here without exception, we're good
-					wasSuccessful = true;
+					wasSuccessful = (result != null);
 				}
 				catch( Exception e )
 				{
@@ -213,13 +258,173 @@ public class ModelManager
 							));
 					
 					// if we made it here without exception, we're good
-					wasSuccessful = true;
+					wasSuccessful = (result != null);
 				}
 				catch( Exception e )
 				{
 					ModelManager.this.logger.warn(String.format("removeUserFromOrganization error: '%s", e.getMessage()));
 				}
 		
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
+			}
+		});
+	}
+	
+	
+	public void createNewFwImage(String fwImageNameIn, String procUuidIn, String devUuidIn, String orgUuidIn,
+								 CreateUpdateFwImageCallback cbIn)
+	{
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean wasSuccessful = false;
+				String putUrl = null;
+				try
+				{
+					PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult result = WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimages(new PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest()
+							{{
+								setCreateFwRequest(new CreateFwRequest() {{
+									setName(fwImageNameIn);
+								}});
+								setProcessorUuid(procUuidIn);
+								setDeviceUuid(devUuidIn);
+								setOrganizationUuid(orgUuidIn);
+							}}
+							.sdkRequestConfig(SdkRequestConfig.builder()
+									.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+									.build()
+									));
+
+					// if we made it here without exception, we're good
+					wasSuccessful = true;
+					putUrl = result.getCreateFwResponse().getPutUrl();
+				}
+				catch( Exception e )
+				{
+					ModelManager.this.logger.warn(String.format("removeUserFromOrganization error: '%s", e.getMessage()));
+				}
+				
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful, putUrl);
+			}
+		});
+	}
+	
+	
+	public void uploadFirmwareImage(String fwUrlIn, File fwImageIn, UploadFwImageCallback cbIn)
+	{
+		this.logger.debug(String.format("url: '%s'", fwUrlIn));
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				// they selected a file...upload it
+				HttpPut put = new HttpPut(fwUrlIn);
+				
+				// setup our file body and listener
+				FileBodyWithProgress fb = new FileBodyWithProgress(fwImageIn);
+				fb.addListener(new ProgessFileEntityListener()
+				{
+					@Override
+					public void onUpdate(long totalNumBytesWrittenIn, long totalNumBytesExpected)
+					{
+						if( cbIn != null ) cbIn.onProgressUpdate(totalNumBytesWrittenIn,totalNumBytesExpected);
+					}
+				});
+				put.setEntity(MultipartEntityBuilder.create().addPart("bin", fb).build());
+				
+				// actually do the put
+				boolean wasSuccessful = false;
+				try
+				{
+				    HttpClients.createDefault().execute(put);
+					wasSuccessful = true;
+				}
+				catch( Exception e )
+				{
+					JOptionPane.showMessageDialog(null, "Error uploading firmware image", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
+			}
+		});
+	}
+	
+	
+	public void updateFirmwareImage(FwImageWrapper fwIn, UpdateFwImageCallback cbIn)
+	{
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean wasSuccessful = false;
+				try
+				{
+					PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult result = WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuid(new PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest()
+							{{
+								setUpdateFwRequest(new UpdateFwRequest()
+								{{
+									setName(fwIn.getModelObject().getName());
+									setToVersionUuid(fwIn.getModelObject().getToVersionUuid());
+								}});
+								
+								setFwUuid(fwIn.getModelObject().getUuid());
+								setProcessorUuid(fwIn.getParent().getModelObject().getUuid());
+								setDeviceUuid(fwIn.getParent().getParent().getModelObject().getUuid());
+								setOrganizationUuid(fwIn.getParent().getParent().getParent().getModelObject().getUuid());
+							}}
+							.sdkRequestConfig(SdkRequestConfig.builder()
+							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+							.build()
+							));
+					
+					// if we made it here without exception, we're good
+					wasSuccessful = (result != null);
+				}
+				catch( Exception e )
+				{
+					ModelManager.this.logger.warn(String.format("deleteFirmwareImage error: '%s", e.getMessage()));
+				}
+				
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
+			}
+		});
+	}
+	
+	
+	public void deleteFirmwareImage(FwImageWrapper fwIn, DeleteFwImageCallback cbIn)
+	{
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean wasSuccessful = false;
+				try
+				{
+					DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult result = WebServicesCommon.client.deleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuid(new DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest()
+							{{
+								setOrganizationUuid(fwIn.getParent().getParent().getParent().getModelObject().getUuid());
+								setDeviceUuid(fwIn.getParent().getParent().getModelObject().getUuid());
+								setProcessorUuid(fwIn.getParent().getModelObject().getUuid());
+								setFwUuid(fwIn.getModelObject().getUuid());
+							}}
+							.sdkRequestConfig(SdkRequestConfig.builder()
+							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+							.build()
+							));
+					
+					// if we made it here without exception, we're good
+					wasSuccessful = (result != null);
+				}
+				catch( Exception e )
+				{
+					ModelManager.this.logger.warn(String.format("deleteFirmwareImage error: '%s", e.getMessage()));
+				}
+				
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});

@@ -17,7 +17,8 @@ import javax.swing.tree.TreeSelectionModel;
 import net.otaupdate.app.model.DeviceWrapper;
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
-import net.otaupdate.app.model.ModelManager.GetOrganizationCallback;
+import net.otaupdate.app.model.ModelManager.RefreshTreeCallback;
+import net.otaupdate.app.ui.main.TreeViewContextMenu.TreeViewContextMenuListener;
 import net.otaupdate.app.model.OrganizationWrapper;
 import net.otaupdate.app.model.ProcessorWrapper;
 
@@ -27,7 +28,8 @@ import javax.swing.JOptionPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class OtaTreeView extends JPanel
+
+public class OtaTreeView extends JPanel implements TreeViewContextMenuListener
 {
 	private static final long serialVersionUID = -191603825660058155L;
 
@@ -41,6 +43,8 @@ public class OtaTreeView extends JPanel
 		public void onProcessorSelected(ProcessorWrapper procIn);
 		
 		public void onFirmwareImageSelected(FwImageWrapper fwImageIn, List<FwImageWrapper> allFwImagesIn);
+		
+		public void onUploadFirmwareImageSelected();
 		
 		public void onDeselection();
 	}
@@ -92,14 +96,16 @@ public class OtaTreeView extends JPanel
 		});
 		add(tree, BorderLayout.CENTER);
 		
+		TreeViewContextMenu tvcm = new TreeViewContextMenu(this);
+		tvcm.addListener(this);
+		this.tree.setComponentPopupMenu(tvcm);
+		
 		JPanel pnlButtons = new JPanel();
 		add(pnlButtons, BorderLayout.SOUTH);
 		pnlButtons.setLayout(new BorderLayout(0, 0));
 		
-		JPanel pnlLeftButtons = new JPanel();
-		pnlButtons.add(pnlLeftButtons, BorderLayout.WEST);
-		
 		JButton btnRefresh = new JButton("Refresh");
+		pnlButtons.add(btnRefresh, BorderLayout.CENTER);
 		btnRefresh.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -107,25 +113,15 @@ public class OtaTreeView extends JPanel
 				OtaTreeView.this.refresh();
 			}
 		});
-		pnlLeftButtons.add(btnRefresh);
-		
-		JPanel pnlRightButtons = new JPanel();
-		pnlButtons.add(pnlRightButtons, BorderLayout.EAST);
-		
-		JButton btnAdd = new JButton("+");
-		pnlRightButtons.add(btnAdd);
-		
-		JButton btnRemove = new JButton("-");
-		pnlRightButtons.add(btnRemove);
 	}
 
 	
 	public void refresh()
 	{
-		ModelManager.getSingleton().getOrganizations(new GetOrganizationCallback()
+		ModelManager.getSingleton().refreshTree(new RefreshTreeCallback()
 		{
 			@Override
-			public void onCompletion(boolean wasSuccessfulIn, List<OrganizationWrapper> items)
+			public void onCompletion(boolean wasSuccessfulIn, List<OrganizationWrapper> organizationsIn)
 			{
 				if( !wasSuccessfulIn )
 				{
@@ -135,13 +131,13 @@ public class OtaTreeView extends JPanel
 				
 				// if we made it here, we were successful
 				OtaTreeView.this.organizations.removeAllChildren();
-				if( (items == null) || (items.isEmpty()) )
+				if( (organizationsIn == null) || (organizationsIn.isEmpty()) )
 				{
 					OtaTreeView.this.organizations.add(new DefaultMutableTreeNode("<none>"));
 				}
 				else
 				{
-					for( OrganizationWrapper currOrg : items )
+					for( OrganizationWrapper currOrg : organizationsIn )
 					{
 						DefaultMutableTreeNode orgNode = new DefaultMutableTreeNode(currOrg);
 						
@@ -179,6 +175,19 @@ public class OtaTreeView extends JPanel
 	public void addListener(OtaTreeViewListener listenerIn)
 	{
 		this.listeners.add(listenerIn);
+	}
+	
+	
+	public Object getSelectedItem()
+	{
+		return ((DefaultMutableTreeNode)this.tree.getLastSelectedPathComponent()).getUserObject();
+	}
+	
+	
+	@Override
+	public void onUploadFirmwareImageSelected()
+	{
+		this.notifyListeners_fwUploadSelect();
 	}
 	
 	
@@ -240,6 +249,15 @@ public class OtaTreeView extends JPanel
 		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
 		{
 			currListener.onFirmwareImageSelected(aiIn, allFwImagesIn);
+		}
+	}
+	
+	
+	private void notifyListeners_fwUploadSelect()
+	{
+		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
+		{
+			currListener.onUploadFirmwareImageSelected();
 		}
 	}
 }

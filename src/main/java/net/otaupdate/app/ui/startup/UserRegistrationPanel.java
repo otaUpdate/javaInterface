@@ -32,7 +32,7 @@ import java.awt.Color;
 public class UserRegistrationPanel extends JPanel implements IntelligentCard
 {
 	private static final long serialVersionUID = -5765398695828583390L;
-
+	
 
 	public interface UserRegistrationPanelListener
 	{

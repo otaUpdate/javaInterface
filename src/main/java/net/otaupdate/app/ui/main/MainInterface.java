@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import net.otaupdate.app.ui.main.details.ProcessorDetailsCard;
 import net.otaupdate.app.ui.main.details.FwImageDetailsCard;
+import java.awt.Dimension;
 
 
 public class MainInterface extends JPanel implements IntelligentCard, OtaTreeViewListener
@@ -68,6 +69,7 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 		cardManager.add(fwImageDetailsCard, CARD_FW_DETAILS);
 		
 		otaTreeView = new OtaTreeView();
+		otaTreeView.setMinimumSize(new Dimension(180, 29));
 		this.otaTreeView.addListener(this);
 		splitPane.setLeftComponent(otaTreeView);
 	}
@@ -126,6 +128,13 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 				((FwImageDetailsCard)newComponentIn).setFwImage(fwImageIn, allFwImagesIn);
 			}
 		});
+	}
+	
+	
+	@Override
+	public void onUploadFirmwareImageSelected()
+	{
+		
 	}
 
 

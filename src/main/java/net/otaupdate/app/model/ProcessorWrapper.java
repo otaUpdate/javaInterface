@@ -1,5 +1,6 @@
 package net.otaupdate.app.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.otaupdate.app.sdk.model.ProcessorArrayItem;
@@ -8,19 +9,32 @@ import net.otaupdate.app.sdk.model.ProcessorArrayItem;
 public class ProcessorWrapper
 {
 	private final ProcessorArrayItem pai;
-	private final List<FwImageWrapper> fwImages;
+	private final List<FwImageWrapper> fwImages = new ArrayList<FwImageWrapper>();
+	private final DeviceWrapper parent;
 	
 	
-	public ProcessorWrapper(ProcessorArrayItem paiIn, List<FwImageWrapper> fwImagesIn)
+	public ProcessorWrapper(ProcessorArrayItem paiIn, DeviceWrapper parentIn)
 	{
 		this.pai = paiIn;
-		this.fwImages = fwImagesIn;
+		this.parent = parentIn;
 	}
 	
 	
 	public ProcessorArrayItem getModelObject()
 	{
 		return this.pai;
+	}
+	
+	
+	public DeviceWrapper getParent()
+	{
+		return this.parent;
+	}
+	
+	
+	public void addFirmwareImage(FwImageWrapper itemIn)
+	{
+		this.fwImages.add(itemIn);
 	}
 	
 	

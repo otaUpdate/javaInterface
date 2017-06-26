@@ -23,7 +23,6 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 	
 	private final JTextField txtName;
 	private final JLabel lblUuidValue;
-	private final OrganizationUsersTableModel tableModel = new OrganizationUsersTableModel();
 	
 	private DeviceWrapper dev = null;
 
@@ -84,6 +83,5 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 		
 		this.txtName.setText(this.dev.getModelObject().getName());
 		this.lblUuidValue.setText(this.dev.getModelObject().getUuid());
-		this.tableModel.refreshForOrganizationUuid(this.dev.getModelObject().getUuid());
 	}
 }
