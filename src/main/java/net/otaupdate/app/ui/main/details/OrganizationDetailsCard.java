@@ -6,7 +6,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 
 import net.otaupdate.app.model.ModelManager;
-import net.otaupdate.app.model.ModelManager.AddRemoveOrganizationUserCallback;
+import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.model.OrganizationWrapper;
 import net.otaupdate.app.sdk.model.OrganizationUserArrayItem;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
@@ -153,7 +153,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 		if( emailToAdd.isEmpty() ) return;
 		
 		ModelManager.getSingleton().addUserToOrganization(this.org.getModelObject().getUuid(), this.txtEmailToAdd.getText(),
-				new AddRemoveOrganizationUserCallback() {
+				new SimpleCallback() {
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
 					{
@@ -184,7 +184,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 		if( user == null ) return;
 		
 		ModelManager.getSingleton().removeUserFromOrganization(this.org.getModelObject().getUuid(), user.getEmail(),
-				new AddRemoveOrganizationUserCallback() {
+				new SimpleCallback() {
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
 					{

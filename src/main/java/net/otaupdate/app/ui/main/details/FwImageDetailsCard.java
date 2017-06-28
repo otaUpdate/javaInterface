@@ -7,7 +7,8 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
-import net.otaupdate.app.model.ModelManager.UpdateFwImageCallback;
+import net.otaupdate.app.model.ModelManager.GetDownloadFwImageCallback;
+import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 
 import com.jgoodies.forms.layout.FormSpecs;
@@ -32,6 +33,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JButton;
 
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -101,8 +105,6 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,}));
 		
 		JLabel lblName = new JLabel("Name:");
@@ -127,24 +129,30 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 		lblUuidValue.setHorizontalAlignment(SwingConstants.TRAILING);
 		pnlDevDetailFields.add(lblUuidValue, "4, 4");
 		
-		JLabel lblHasFirmwareImage = new JLabel("Has Firmware Image:");
-		pnlDevDetailFields.add(lblHasFirmwareImage, "2, 6");
-		
-		JLabel lblHasFwImageValue = new JLabel("<unknown>");
-		lblHasFwImageValue.setHorizontalAlignment(SwingConstants.RIGHT);
-		pnlDevDetailFields.add(lblHasFwImageValue, "4, 6");
-		
 		JPanel pnlButtons = new JPanel();
 		FlowLayout fl_pnlButtons = (FlowLayout) pnlButtons.getLayout();
 		fl_pnlButtons.setAlignment(FlowLayout.RIGHT);
 		pnlDevDetails.add(pnlButtons, BorderLayout.SOUTH);
 		
-		JButton btnGetDownloadLink = new JButton("Get Download Link");
-		btnGetDownloadLink.setEnabled(false);
+		JButton btnGetDownloadLink = new JButton("Copy Download Link");
 		btnGetDownloadLink.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				ModelManager.getSingleton().getDownloadLinkForFirmwareImage(FwImageDetailsCard.this.fw, new GetDownloadFwImageCallback()
+				{
+					@Override
+					public void onCompletion(boolean wasSuccessfulIn, String downloadUrlIn)
+					{
+						if( wasSuccessfulIn )
+						{
+							Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+							clpbrd.setContents(new StringSelection(downloadUrlIn), null);
+							JOptionPane.showMessageDialog(FwImageDetailsCard.this, "Link copied to clipboard", "Download link", JOptionPane.INFORMATION_MESSAGE);
+						}
+						else JOptionPane.showMessageDialog(FwImageDetailsCard.this, "Error generating download link", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				});
 			}
 		});
 		pnlButtons.add(btnGetDownloadLink);
@@ -195,7 +203,7 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 	private void changeToVersionByUuid(String toVersionUuidIn)
 	{
 		this.fw.getModelObject().setToVersionUuid(toVersionUuidIn);
-		ModelManager.getSingleton().updateFirmwareImage(this.fw, new UpdateFwImageCallback()
+		ModelManager.getSingleton().updateFirmwareImage(this.fw, new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
@@ -212,7 +220,7 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 	private void updateFwName(String newNameIn)
 	{
 		this.fw.getModelObject().setName(newNameIn);
-		ModelManager.getSingleton().updateFirmwareImage(this.fw, new UpdateFwImageCallback()
+		ModelManager.getSingleton().updateFirmwareImage(this.fw, new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
