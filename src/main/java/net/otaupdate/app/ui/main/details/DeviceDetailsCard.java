@@ -6,14 +6,19 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 
 import net.otaupdate.app.model.DeviceWrapper;
+import net.otaupdate.app.model.ModelManager;
+import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 
 import com.jgoodies.forms.layout.FormSpecs;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 public class DeviceDetailsCard extends JPanel implements IntelligentCard
@@ -50,6 +55,22 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 		pnlDevDetails.add(lblName, "2, 2, right, default");
 		
 		txtName = new JTextField();
+		txtName.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				DeviceDetailsCard.this.dev.getModelObject().setName(DeviceDetailsCard.this.txtName.getText());
+				
+				ModelManager.getSingleton().updateDevice(DeviceDetailsCard.this.dev, new SimpleCallback()
+				{
+					@Override
+					public void onCompletion(boolean wasSuccessfulIn)
+					{
+						if( !wasSuccessfulIn ) JOptionPane.showMessageDialog(DeviceDetailsCard.this, "Error setting device name", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				});
+			}
+		});
 		txtName.setHorizontalAlignment(SwingConstants.TRAILING);
 		pnlDevDetails.add(txtName, "4, 2, fill, default");
 		txtName.setColumns(10);

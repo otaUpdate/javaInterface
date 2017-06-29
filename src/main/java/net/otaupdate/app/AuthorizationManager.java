@@ -14,6 +14,7 @@ import net.otaupdate.app.sdk.model.UserAuthRequest;
 import net.otaupdate.app.util.Dispatch;
 
 
+@SuppressWarnings("serial")
 public class AuthorizationManager
 {
 	private static final AuthorizationManager SINGLETON = new AuthorizationManager();
@@ -111,7 +112,7 @@ public class AuthorizationManager
 							}});
 					
 					// if we made it here without exceptions, we're good
-					wasSuccessful = true;
+					wasSuccessful = (result != null);
 					errorMessage = null;
 				}
 				catch( Exception e )

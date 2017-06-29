@@ -49,13 +49,17 @@ import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProc
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult;
+import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidUsersRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidUsersResult;
 import net.otaupdate.app.sdk.model.PostOrgsRequest;
 import net.otaupdate.app.sdk.model.ProcessorArrayItem;
+import net.otaupdate.app.sdk.model.UpdateDeviceRequest;
 import net.otaupdate.app.sdk.model.UpdateFwRequest;
+import net.otaupdate.app.sdk.model.UpdateProcRequest;
 import net.otaupdate.app.util.Dispatch;
 import net.otaupdate.app.util.FileBodyWithProgress;
 import net.otaupdate.app.util.FileBodyWithProgress.ProgessFileEntityListener;
@@ -384,6 +388,44 @@ public class ModelManager
 	}
 	
 	
+	public void updateDevice(DeviceWrapper devIn, SimpleCallback cbIn)
+	{
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean wasSuccessful = false;
+				try
+				{
+					WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuid(new PostOrgsOrganizationUuidDevicesDeviceUuidRequest()
+							{{
+								setDeviceUuid(devIn.getModelObject().getUuid());
+								setOrganizationUuid(devIn.getParent().getModelObject().getUuid());
+								setUpdateDeviceRequest(new UpdateDeviceRequest()
+										{{
+											setName(devIn.getModelObject().getName());
+										}});
+							}}
+							.sdkRequestConfig(SdkRequestConfig.builder()
+							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+							.build()
+							));
+					
+					// if we made it here without exception, we're good
+					wasSuccessful = true;
+				}
+				catch( Exception e )
+				{
+					ModelManager.this.logger.warn(String.format("updateProcessor error: '%s", e.getMessage()));
+				}
+		
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
+			}
+		});
+	}
+	
+	
 	public void deleteDevice(DeviceWrapper devIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -449,6 +491,46 @@ public class ModelManager
 				catch( Exception e )
 				{
 					ModelManager.this.logger.warn(String.format("addProcessorToDevice error: '%s", e.getMessage()));
+				}
+		
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
+			}
+		});
+	}
+	
+	
+	public void updateProcessor(ProcessorWrapper procIn, SimpleCallback cbIn)
+	{
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean wasSuccessful = false;
+				try
+				{
+					WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuid(new PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidRequest()
+							{{
+								setProcessorUuid(procIn.getModelObject().getUuid());
+								setDeviceUuid(procIn.getParent().getModelObject().getUuid());
+								setOrganizationUuid(procIn.getParent().getParent().getModelObject().getUuid());
+								setUpdateProcRequest(new UpdateProcRequest()
+										{{
+											setName(procIn.getModelObject().getName());
+											setLatestFirmwareUuid(procIn.getModelObject().getLatestFirmwareUuid());
+										}});
+							}}
+							.sdkRequestConfig(SdkRequestConfig.builder()
+							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+							.build()
+							));
+					
+					// if we made it here without exception, we're good
+					wasSuccessful = true;
+				}
+				catch( Exception e )
+				{
+					ModelManager.this.logger.warn(String.format("updateProcessor error: '%s", e.getMessage()));
 				}
 		
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
