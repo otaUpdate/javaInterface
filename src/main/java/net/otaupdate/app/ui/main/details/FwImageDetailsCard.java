@@ -155,6 +155,18 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 				});
 			}
 		});
+		
+		JButton btnCopyUuid = new JButton("Copy UUID");
+		btnCopyUuid.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+				clpbrd.setContents(new StringSelection(FwImageDetailsCard.this.fw.getModelObject().getUuid()), null);
+				JOptionPane.showMessageDialog(FwImageDetailsCard.this, "UUID copied to clipboard", "Firmware UUID", JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		pnlButtons.add(btnCopyUuid);
 		pnlButtons.add(btnGetDownloadLink);
 	}
 

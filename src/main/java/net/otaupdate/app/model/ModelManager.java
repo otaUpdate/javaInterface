@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -636,7 +636,8 @@ public class ModelManager
 						if( cbIn != null ) cbIn.onProgressUpdate(totalNumBytesWrittenIn,totalNumBytesExpected);
 					}
 				});
-				put.setEntity(MultipartEntityBuilder.create().addPart("bin", fb).build());
+				put.setEntity(new FileEntity(fwImageIn));
+//				put.setEntity(MultipartEntityBuilder.create().addPart("bin", fb).build());
 				
 				// actually do the put
 				boolean wasSuccessful = false;
