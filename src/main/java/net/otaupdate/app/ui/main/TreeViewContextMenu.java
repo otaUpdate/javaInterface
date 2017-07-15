@@ -1,5 +1,8 @@
 package net.otaupdate.app.ui.main;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -9,13 +12,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import net.otaupdate.app.model.DeviceWrapper;
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
-import net.otaupdate.app.model.ModelManager.CreateUpdateFwImageCallback;
+import net.otaupdate.app.model.ModelManager.CreateFwImageCallback;
 import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.model.ModelManager.UploadFwImageCallback;
 import net.otaupdate.app.ui.util.ProgressDialog;
@@ -275,48 +279,67 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 		String name = JOptionPane.showInputDialog(null, "Please enter name of new firmware image", "New Firmware Image", JOptionPane.PLAIN_MESSAGE);
 		if( (name == null) || (name.length() == 0) ) return;
 		
-		// get the file
-		JFileChooser jfc = new JFileChooser();
-		jfc.setDialogTitle("Select Firmware Binary");
-		if( jfc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION ) return ;
-
 		// if we made it here, we're gonna try to create a new firmware image
 		String uuid_proc = procWrapperIn.getModelObject().getUuid();
 		String uuid_dev = procWrapperIn.getParent().getModelObject().getUuid();
 		String uuid_org = procWrapperIn.getParent().getParent().getModelObject().getUuid();
 		
-		ModelManager.getSingleton().createNewFwImage(name, uuid_proc, uuid_dev, uuid_org, new CreateUpdateFwImageCallback()
+		// now we need to create the firmware image (so we can get a UUID for it)
+		ModelManager.getSingleton().createNewFwImage(name, uuid_proc, uuid_dev, uuid_org, new CreateFwImageCallback()
 		{
 			@Override
-			public void onCompletion(boolean wasSuccessfulIn, String tempPutUrlIn)
+			public void onCompletion(boolean wasSuccessfulIn, String newFwUuidIn )
 			{
 				if( wasSuccessfulIn )
 				{
-					ProgressDialog pd = new ProgressDialog();
-					pd.setVisible(true);
-					ModelManager.getSingleton().uploadFirmwareImage(tempPutUrlIn, jfc.getSelectedFile(), new UploadFwImageCallback()
+					Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+					clpbrd.setContents(new StringSelection(newFwUuidIn), null);
+					
+					// now we should display the new UUID to the user
+					JOptionPane.showMessageDialog(null, String.format("New firmware UUID:\n\n%s\n\nUUID has been copied to the clipboard.", newFwUuidIn), 
+												  "Firmware Created Successfully", JOptionPane.INFORMATION_MESSAGE);
+					
+					// needs to be run on main thread
+					SwingUtilities.invokeLater(new Runnable()
 					{
 						@Override
-						public void onProgressUpdate(long totalNumBytesWrittenIn, long totalNumBytesExpected)
+						public void run()
 						{
-							pd.updateProgress((float)totalNumBytesWrittenIn / (float)totalNumBytesExpected,
-											  String.format("%d / %d bytes", totalNumBytesWrittenIn, totalNumBytesExpected));
-						}
-						
-						@Override
-						public void onCompletion(boolean wasSuccessfulIn)
-						{
-							pd.setVisible(false);
-							pd.dispose();
-							
-							if( wasSuccessfulIn )
+							// now we need to choose the file
+							JFileChooser jfc = new JFileChooser();
+							jfc.setDialogTitle("Select Firmware Binary");
+							if( jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION )
 							{
-								JOptionPane.showMessageDialog(null, "Firmware image upload complete", "Upload complete", JOptionPane.INFORMATION_MESSAGE);
-							}
-							else
-							{
-								JOptionPane.showMessageDialog(null, "Error creating firmware image", "Error", JOptionPane.ERROR_MESSAGE);
-							}
+								// file was chosen...upload it
+								ProgressDialog pd = new ProgressDialog();
+								pd.setVisible(true);
+								ModelManager.getSingleton().uploadFirmwareImage(newFwUuidIn, uuid_proc, uuid_dev, uuid_org, jfc.getSelectedFile(), new UploadFwImageCallback()
+								{
+									@Override
+									public void onProgressUpdate(long totalNumBytesWrittenIn, long totalNumBytesExpected)
+									{
+										pd.updateProgress((float)totalNumBytesWrittenIn / (float)totalNumBytesExpected,
+												  String.format("%d / %d bytes", totalNumBytesWrittenIn, totalNumBytesExpected));
+									}
+									
+									@Override
+									public void onCompletion(boolean wasSuccessfulIn)
+									{
+										pd.setVisible(false);
+										pd.dispose();
+										
+										if( wasSuccessfulIn )
+										{
+											JOptionPane.showMessageDialog(null, "Firmware image upload complete", "Upload complete", JOptionPane.INFORMATION_MESSAGE);
+										}
+										else
+										{
+											JOptionPane.showMessageDialog(null, "Error creating firmware image", "Error", JOptionPane.ERROR_MESSAGE);
+										}
+										TreeViewContextMenu.this.parent.refresh();
+									}
+								});
+							}	
 							TreeViewContextMenu.this.parent.refresh();
 						}
 					});

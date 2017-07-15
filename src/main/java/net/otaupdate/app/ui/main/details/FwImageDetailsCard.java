@@ -7,7 +7,6 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
-import net.otaupdate.app.model.ModelManager.GetDownloadFwImageCallback;
 import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 
@@ -134,28 +133,6 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 		fl_pnlButtons.setAlignment(FlowLayout.RIGHT);
 		pnlDevDetails.add(pnlButtons, BorderLayout.SOUTH);
 		
-		JButton btnGetDownloadLink = new JButton("Copy Download Link");
-		btnGetDownloadLink.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				ModelManager.getSingleton().getDownloadLinkForFirmwareImage(FwImageDetailsCard.this.fw, new GetDownloadFwImageCallback()
-				{
-					@Override
-					public void onCompletion(boolean wasSuccessfulIn, String downloadUrlIn)
-					{
-						if( wasSuccessfulIn )
-						{
-							Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-							clpbrd.setContents(new StringSelection(downloadUrlIn), null);
-							JOptionPane.showMessageDialog(FwImageDetailsCard.this, "Link copied to clipboard", "Download link", JOptionPane.INFORMATION_MESSAGE);
-						}
-						else JOptionPane.showMessageDialog(FwImageDetailsCard.this, "Error generating download link", "Error", JOptionPane.ERROR_MESSAGE);
-					}
-				});
-			}
-		});
-		
 		JButton btnCopyUuid = new JButton("Copy UUID");
 		btnCopyUuid.addActionListener(new ActionListener()
 		{
@@ -167,7 +144,6 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 			}
 		});
 		pnlButtons.add(btnCopyUuid);
-		pnlButtons.add(btnGetDownloadLink);
 	}
 
 	

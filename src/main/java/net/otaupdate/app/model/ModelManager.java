@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.HttpClients;
@@ -30,7 +28,8 @@ import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidUsersUserEmailResul
 import net.otaupdate.app.sdk.model.DeviceArrayItem;
 import net.otaupdate.app.sdk.model.EmailAddress;
 import net.otaupdate.app.sdk.model.FwImageArrayItem;
-import net.otaupdate.app.sdk.model.GenerateFwDownloadRequest;
+import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlinkRequest;
+import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlinkResult;
 import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest;
 import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult;
 import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsRequest;
@@ -43,8 +42,6 @@ import net.otaupdate.app.sdk.model.GetOrgsRequest;
 import net.otaupdate.app.sdk.model.GetOrgsResult;
 import net.otaupdate.app.sdk.model.OrganizationArrayItem;
 import net.otaupdate.app.sdk.model.OrganizationUserArrayItem;
-import net.otaupdate.app.sdk.model.PostDevapiGeneratefwdownloadlinkRequest;
-import net.otaupdate.app.sdk.model.PostDevapiGeneratefwdownloadlinkResult;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult;
 import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest;
@@ -89,15 +86,15 @@ public class ModelManager
 	}
 	
 	
-	public interface CreateUpdateFwImageCallback
-	{
-		public void onCompletion(boolean wasSuccessfulIn, String tempPutUrlIn);
-	}
-	
-	
 	public interface GetDownloadFwImageCallback
 	{
 		public void onCompletion(boolean wasSuccessfulIn, String downloadUrlIn);
+	}
+	
+	
+	public interface CreateFwImageCallback
+	{
+		public void onCompletion(boolean wasSuccessfulIn, String newFwUuidIn);
 	}
 	
 	
@@ -575,7 +572,7 @@ public class ModelManager
 	
 	
 	public void createNewFwImage(String fwImageNameIn, String procUuidIn, String devUuidIn, String orgUuidIn,
-								 CreateUpdateFwImageCallback cbIn)
+								 CreateFwImageCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -583,7 +580,7 @@ public class ModelManager
 			public void run()
 			{
 				boolean wasSuccessful = false;
-				String putUrl = null;
+				String newUuid = null;
 				try
 				{
 					PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult result = WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimages(new PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest()
@@ -601,30 +598,39 @@ public class ModelManager
 									));
 
 					// if we made it here without exception, we're good
-					wasSuccessful = true;
-					putUrl = result.getCreateFwResponse().getPutUrl();
+					wasSuccessful = (result != null);
+					newUuid = result.getCreateFwResponse().getUuid();
 				}
 				catch( Exception e )
 				{
 					ModelManager.this.logger.warn(String.format("removeUserFromOrganization error: '%s", e.getMessage()));
 				}
 				
-				if( cbIn != null ) cbIn.onCompletion(wasSuccessful, putUrl);
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful, newUuid);
 			}
 		});
 	}
 	
 	
-	public void uploadFirmwareImage(String fwUrlIn, File fwImageIn, UploadFwImageCallback cbIn)
+	public void uploadFirmwareImage(String fwUuidIn, String procUuidIn, String devUuidIn, String orgUuidIn, 
+									File fwImageIn, UploadFwImageCallback cbIn)
 	{
-		this.logger.debug(String.format("url: '%s'", fwUrlIn));
 		Dispatch.async(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				// they selected a file...upload it
-				HttpPut put = new HttpPut(fwUrlIn);
+				// first, we need to get the url to which we should be uploading
+				String url = ModelManager.this.getUploadUrlForFwUuid(fwUuidIn, procUuidIn, devUuidIn, orgUuidIn);
+				if( url == null )
+				{
+					if( cbIn!= null ) cbIn.onCompletion(false);
+					return;
+				}
+				ModelManager.this.logger.debug(String.format("uploading to '%s'", url));
+				
+				// we have a valid URL...put it
+				HttpPut put = new HttpPut(url);
 				
 				// setup our file body and listener
 				FileBodyWithProgress fb = new FileBodyWithProgress(fwImageIn);
@@ -646,10 +652,7 @@ public class ModelManager
 				    HttpClients.createDefault().execute(put);
 					wasSuccessful = true;
 				}
-				catch( Exception e )
-				{
-					JOptionPane.showMessageDialog(null, "Error uploading firmware image", "Error", JOptionPane.ERROR_MESSAGE);
-				}
+				catch( Exception e ) { }
 				
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
@@ -694,40 +697,6 @@ public class ModelManager
 				}
 				
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
-			}
-		});
-	}
-	
-	
-	public void getDownloadLinkForFirmwareImage(FwImageWrapper fwIn, GetDownloadFwImageCallback cbIn)
-	{
-		Dispatch.async(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				boolean wasSuccessful = false;
-				String url = null;
-				try
-				{
-					PostDevapiGeneratefwdownloadlinkResult result = WebServicesCommon.client.postDevapiGeneratefwdownloadlink(new PostDevapiGeneratefwdownloadlinkRequest()
-							{{
-								setGenerateFwDownloadRequest(new GenerateFwDownloadRequest()
-										{{
-											setTargetFwUuid(fwIn.getModelObject().getUuid());
-										}});
-							}});
-					
-					// if we made it here without exception, we're good
-					wasSuccessful = (result != null);
-					url = result.getGenerateFwDownloadResponse().getUrl();
-				}
-				catch( Exception e )
-				{
-					ModelManager.this.logger.warn(String.format("createOrganization error: '%s", e.getMessage()));
-				}
-		
-				if( cbIn != null ) cbIn.onCompletion(wasSuccessful, url);
 			}
 		});
 	}
@@ -824,5 +793,34 @@ public class ModelManager
 		
 		// if we made it here without exception, we're good
 		return result.getFwImageArray();
+	}
+	
+	
+	private String getUploadUrlForFwUuid(String fwUuidIn, String procUuidIn, String devUuidIn, String orgUuidIn)
+	{
+		String retVal = null;
+		try
+		{
+			GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlinkResult result = WebServicesCommon.client.getOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlink(new GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlinkRequest()
+					{{
+						setFwUuid(fwUuidIn);
+						setProcessorUuid(procUuidIn);
+						setDeviceUuid(devUuidIn);
+						setOrganizationUuid(orgUuidIn);
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
+					.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+					.build()
+					));
+			
+			// if we made it here without exception, we're good
+			retVal = result.getFwUploadLinkResponse().getLink();
+		}
+		catch( Exception e )
+		{
+			ModelManager.this.logger.warn(String.format("deleteFirmwareImage error: '%s", e.getMessage()));
+		}
+		
+		return retVal;
 	}
 }
