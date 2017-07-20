@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
@@ -29,6 +30,7 @@ import net.otaupdate.app.model.ProcessorWrapper;
 public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 {
 	private static final long serialVersionUID = -1274596196172586854L;
+	private static final String KEY_LASTDIR_FW = "lastDirectory_fw";
 	
 	
 	public interface TreeViewContextMenuListener
@@ -305,11 +307,16 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 						@Override
 						public void run()
 						{
+							String defaultDir = Preferences.userNodeForPackage(TreeViewContextMenu.class).get(KEY_LASTDIR_FW, null);
+							
 							// now we need to choose the file
-							JFileChooser jfc = new JFileChooser();
+							JFileChooser jfc = new JFileChooser(defaultDir);
 							jfc.setDialogTitle("Select Firmware Binary");
 							if( jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION )
 							{
+								// save the parent directory for later
+								Preferences.userNodeForPackage(TreeViewContextMenu.class).put(KEY_LASTDIR_FW, jfc.getSelectedFile().getParent());
+								
 								// file was chosen...upload it
 								ProgressDialog pd = new ProgressDialog();
 								pd.setVisible(true);
