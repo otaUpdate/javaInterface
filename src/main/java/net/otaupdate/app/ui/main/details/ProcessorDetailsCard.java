@@ -13,7 +13,7 @@ import com.mxgraph.view.mxGraph;
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.SimpleCallback;
-import net.otaupdate.app.model.ProcessorWrapper;
+import net.otaupdate.app.model.ProcessorTypeWrapper;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 
 import com.jgoodies.forms.layout.FormSpecs;
@@ -47,7 +47,7 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 	private final JComboBox<Object> cmbLatestFirmwareVersion;
 	
 	
-	private ProcessorWrapper proc = null;
+	private ProcessorTypeWrapper proc = null;
 	private boolean isUpdatingUi = false;
 
 	
@@ -84,7 +84,7 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 				
 				ProcessorDetailsCard.this.proc.getModelObject().setName(ProcessorDetailsCard.this.txtName.getText());
 				
-				ModelManager.getSingleton().updateProcessor(ProcessorDetailsCard.this.proc, new SimpleCallback()
+				ModelManager.getSingleton().updateProcessorType(ProcessorDetailsCard.this.proc, new SimpleCallback()
 				{
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
@@ -119,7 +119,7 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 				String latestFwVersion = (selectedItem instanceof FwImageWrapper) ? ((FwImageWrapper)selectedItem).getModelObject().getUuid() : ""; 
 				ProcessorDetailsCard.this.proc.getModelObject().setLatestFirmwareUuid(latestFwVersion);
 				
-				ModelManager.getSingleton().updateProcessor(ProcessorDetailsCard.this.proc, new SimpleCallback()
+				ModelManager.getSingleton().updateProcessorType(ProcessorDetailsCard.this.proc, new SimpleCallback()
 				{
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
@@ -143,7 +143,7 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 	}
 
 	
-	public void setProcessor(ProcessorWrapper procIn)
+	public void setProcessor(ProcessorTypeWrapper procIn)
 	{
 		this.proc = procIn;
 		this.refreshUi();

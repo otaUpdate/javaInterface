@@ -14,13 +14,13 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
-import net.otaupdate.app.model.DeviceWrapper;
+import net.otaupdate.app.model.DeviceTypeWrapper;
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.RefreshTreeCallback;
 import net.otaupdate.app.ui.main.TreeViewContextMenu.TreeViewContextMenuListener;
 import net.otaupdate.app.model.OrganizationWrapper;
-import net.otaupdate.app.model.ProcessorWrapper;
+import net.otaupdate.app.model.ProcessorTypeWrapper;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -38,9 +38,9 @@ public class OtaTreeView extends JPanel implements TreeViewContextMenuListener
 	{
 		public void onOrganizationSelected(OrganizationWrapper orgIn);
 		
-		public void onDeviceSelected(DeviceWrapper devIn);
+		public void onDeviceSelected(DeviceTypeWrapper devIn);
 		
-		public void onProcessorSelected(ProcessorWrapper procIn);
+		public void onProcessorSelected(ProcessorTypeWrapper procIn);
 		
 		public void onFirmwareImageSelected(FwImageWrapper fwImageIn, List<FwImageWrapper> allFwImagesIn);
 		
@@ -75,13 +75,13 @@ public class OtaTreeView extends JPanel implements TreeViewContextMenuListener
 				{
 					OtaTreeView.this.notifyListeners_orgSelect(((OrganizationWrapper)node.getUserObject()));
 				}
-				else if( (node != null) && (node.getUserObject() instanceof DeviceWrapper) )
+				else if( (node != null) && (node.getUserObject() instanceof DeviceTypeWrapper) )
 				{
-					OtaTreeView.this.notifyListeners_devSelect(((DeviceWrapper)node.getUserObject()));
+					OtaTreeView.this.notifyListeners_devSelect(((DeviceTypeWrapper)node.getUserObject()));
 				}
-				else if( (node != null) && (node.getUserObject() instanceof ProcessorWrapper) )
+				else if( (node != null) && (node.getUserObject() instanceof ProcessorTypeWrapper) )
 				{
-					OtaTreeView.this.notifyListeners_procSelect(((ProcessorWrapper)node.getUserObject()));
+					OtaTreeView.this.notifyListeners_procSelect(((ProcessorTypeWrapper)node.getUserObject()));
 				}
 				else if( (node != null) && (node.getUserObject() instanceof FwImageWrapper) )
 				{
@@ -141,11 +141,11 @@ public class OtaTreeView extends JPanel implements TreeViewContextMenuListener
 					{
 						DefaultMutableTreeNode orgNode = new DefaultMutableTreeNode(currOrg);
 						
-						for( DeviceWrapper currDevice : currOrg.getDevices() )
+						for( DeviceTypeWrapper currDevice : currOrg.getDevices() )
 						{
 							DefaultMutableTreeNode devNode = new DefaultMutableTreeNode(currDevice);
 							
-							for( ProcessorWrapper currProc : currDevice.getProcessors() )
+							for( ProcessorTypeWrapper currProc : currDevice.getProcessors() )
 							{
 								DefaultMutableTreeNode procNode = new DefaultMutableTreeNode(currProc);
 								
@@ -226,7 +226,7 @@ public class OtaTreeView extends JPanel implements TreeViewContextMenuListener
 	}
 	
 	
-	private void notifyListeners_devSelect(DeviceWrapper aiIn)
+	private void notifyListeners_devSelect(DeviceTypeWrapper aiIn)
 	{
 		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
 		{
@@ -235,7 +235,7 @@ public class OtaTreeView extends JPanel implements TreeViewContextMenuListener
 	}
 	
 	
-	private void notifyListeners_procSelect(ProcessorWrapper aiIn)
+	private void notifyListeners_procSelect(ProcessorTypeWrapper aiIn)
 	{
 		for( OtaTreeViewListener currListener : OtaTreeView.this.listeners )
 		{

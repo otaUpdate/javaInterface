@@ -8,7 +8,7 @@ import net.otaupdate.app.sdk.model.OrganizationArrayItem;
 public class OrganizationWrapper
 {
 	private final OrganizationArrayItem oai;
-	private final List<DeviceWrapper> devices = new ArrayList<DeviceWrapper>();
+	private final List<DeviceTypeWrapper> devices = new ArrayList<DeviceTypeWrapper>();
 	
 	
 	public OrganizationWrapper(OrganizationArrayItem oaiIn)
@@ -23,13 +23,13 @@ public class OrganizationWrapper
 	}
 	
 	
-	public void addDevice(DeviceWrapper itemIn)
+	public void addDevice(DeviceTypeWrapper itemIn)
 	{
 		this.devices.add(itemIn);
 	}
 	
 	
-	public List<DeviceWrapper> getDevices()
+	public List<DeviceTypeWrapper> getDevices()
 	{
 		return this.devices;
 	}

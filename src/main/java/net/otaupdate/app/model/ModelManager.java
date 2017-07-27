@@ -14,49 +14,48 @@ import com.amazonaws.opensdk.SdkRequestConfig;
 
 import net.otaupdate.app.AuthorizationManager;
 import net.otaupdate.app.WebServicesCommon;
-import net.otaupdate.app.sdk.model.CreateDeviceRequest;
+import net.otaupdate.app.sdk.model.CreateDeviceTypeRequest;
 import net.otaupdate.app.sdk.model.CreateFwRequest;
 import net.otaupdate.app.sdk.model.CreateOrgRequest;
-import net.otaupdate.app.sdk.model.CreateProcRequest;
-import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest;
-import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult;
-import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidRequest;
-import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidDevicesDeviceUuidRequest;
-import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidRequest;
-import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidUsersUserEmailRequest;
-import net.otaupdate.app.sdk.model.DeleteOrgsOrganizationUuidUsersUserEmailResult;
-import net.otaupdate.app.sdk.model.DeviceArrayItem;
+import net.otaupdate.app.sdk.model.CreateProcTypeRequest;
+import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidRequest;
+import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidResult;
+import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidRequest;
+import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidRequest;
+import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidRequest;
+import net.otaupdate.app.sdk.model.DeviceTypeArrayItem;
 import net.otaupdate.app.sdk.model.EmailAddress;
 import net.otaupdate.app.sdk.model.FwImageArrayItem;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlinkRequest;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlinkResult;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsRequest;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsResult;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesRequest;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidDevicesResult;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidUsersRequest;
-import net.otaupdate.app.sdk.model.GetOrgsOrganizationUuidUsersResult;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidFwuploadlinkRequest;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidFwuploadlinkResult;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesRequest;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesResult;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesRequest;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesResult;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesRequest;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesResult;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidUsersRequest;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidUsersResult;
 import net.otaupdate.app.sdk.model.GetOrgsRequest;
 import net.otaupdate.app.sdk.model.GetOrgsResult;
 import net.otaupdate.app.sdk.model.OrganizationArrayItem;
 import net.otaupdate.app.sdk.model.OrganizationUserArrayItem;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidRequest;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsRequest;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesDeviceUuidRequest;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidDevicesRequest;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidUsersRequest;
-import net.otaupdate.app.sdk.model.PostOrgsOrganizationUuidUsersResult;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidResult;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesResult;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidUsersRemoveuserfromorgRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidUsersRequest;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidUsersResult;
 import net.otaupdate.app.sdk.model.PostOrgsRequest;
-import net.otaupdate.app.sdk.model.ProcessorArrayItem;
-import net.otaupdate.app.sdk.model.UpdateDeviceRequest;
+import net.otaupdate.app.sdk.model.ProcTypeArrayItem;
+import net.otaupdate.app.sdk.model.UpdateDeviceTypeRequest;
 import net.otaupdate.app.sdk.model.UpdateFwRequest;
-import net.otaupdate.app.sdk.model.UpdateProcRequest;
+import net.otaupdate.app.sdk.model.UpdateProcTypeRequest;
 import net.otaupdate.app.util.Dispatch;
 import net.otaupdate.app.util.FileBodyWithProgress;
 import net.otaupdate.app.util.FileBodyWithProgress.ProgessFileEntityListener;
@@ -66,53 +65,53 @@ import net.otaupdate.app.util.FileBodyWithProgress.ProgessFileEntityListener;
 public class ModelManager
 {
 	private static final ModelManager SINGLETON = new ModelManager();
-	
-	
+
+
 	public interface RefreshTreeCallback
 	{
 		public void onCompletion(boolean wasSuccessfulIn, List<OrganizationWrapper> organizationsIn);
 	}
-	
-	
+
+
 	public interface GetUsersForOrganizationCallback
 	{
 		public void onCompletion(boolean wasSuccessfulIn, List<OrganizationUserArrayItem> itemsIn);
 	}
-	
-	
+
+
 	public interface SimpleCallback
 	{
 		public void onCompletion(boolean wasSuccessfulIn);
 	}
-	
-	
+
+
 	public interface GetDownloadFwImageCallback
 	{
 		public void onCompletion(boolean wasSuccessfulIn, String downloadUrlIn);
 	}
-	
-	
+
+
 	public interface CreateFwImageCallback
 	{
 		public void onCompletion(boolean wasSuccessfulIn, String newFwUuidIn);
 	}
-	
-	
+
+
 	public interface UploadFwImageCallback
 	{
 		public void onProgressUpdate(long totalNumBytesWrittenIn, long totalNumBytesExpected);
 		public void onCompletion(boolean wasSuccessfulIn);
 	}
-	
-	
+
+
 	private final Logger logger = LogManager.getLogger(this.getClass());
-	
-	
+
+
 	private ModelManager()
 	{
 	}
-	
-	
+
+
 	public void refreshTree(RefreshTreeCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -130,37 +129,37 @@ public class ModelManager
 							.build()
 							));
 					List<OrganizationArrayItem> oais = result.getOrganizationArray();
-					
+
 					// wrap the amazon-provided object nicely
 					for( OrganizationArrayItem currOai : oais )
 					{
 						OrganizationWrapper org = new OrganizationWrapper(currOai);
-						
+
 						// fetch the devices for this organization
-						for( DeviceArrayItem currDai : ModelManager.this.getDevicesForOrganization(currOai.getUuid()) )
+						for( DeviceTypeArrayItem currDtai : ModelManager.this.getDeviceTypesForOrganization(currOai.getUuid()) )
 						{
-							DeviceWrapper device = new DeviceWrapper(currDai, org);
-							
+							DeviceTypeWrapper device = new DeviceTypeWrapper(currDtai, org);
+
 							// fetch the processors for this device
-							for( ProcessorArrayItem currPai : ModelManager.this.getProcessorsForDeviceAndOrganization(currDai.getUuid(), currOai.getUuid()) )
+							for( ProcTypeArrayItem currPtai : ModelManager.this.getProcessorTypesForDeviceAndOrganization(currDtai.getUuid(), currOai.getUuid()) )
 							{
-								ProcessorWrapper proc = new ProcessorWrapper(currPai, device);
-								
+								ProcessorTypeWrapper proc = new ProcessorTypeWrapper(currPtai, device);
+
 								// fetch the firmware images for this processor
-								for( FwImageArrayItem currFwai : ModelManager.this.getFwImagesForProcessorAndDeviceAndOrganization(currPai.getUuid(), currDai.getUuid(), currOai.getUuid()) )
+								for( FwImageArrayItem currFwai : ModelManager.this.getFwImagesForProcessorTypeAndDeviceTypeAndOrganization(currPtai.getUuid(), currDtai.getUuid(), currOai.getUuid()) )
 								{
 									proc.addFirmwareImage(new FwImageWrapper(currFwai, proc));
 								}
-								
+
 								device.addProcessor(proc);
 							}
-							
+
 							org.addDevice(device);
 						}
 
 						organizations.add(org);
 					}
-					
+
 					wasSuccessful = true;
 				}
 				catch( Exception e )
@@ -168,13 +167,13 @@ public class ModelManager
 					organizations = null;
 					ModelManager.this.logger.warn(String.format("getOrganizations error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful, organizations);
 			}
 		});
 	}
-	
-	
+
+
 	public void createNewOrganization(String organizationNameIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -186,17 +185,17 @@ public class ModelManager
 				try
 				{
 					WebServicesCommon.client.postOrgs(new PostOrgsRequest()
-							{{
-								setCreateOrgRequest(new CreateOrgRequest()
-										{{
-											setName(organizationNameIn);
-										}});
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					{{
+						setCreateOrgRequest(new CreateOrgRequest()
+						{{
+							setName(organizationNameIn);
+						}});
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
 				}
@@ -204,13 +203,13 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("createOrganization error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
+
+
 	public void deleteOrganization(OrganizationWrapper orgIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -221,15 +220,15 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					WebServicesCommon.client.deleteOrgsOrganizationUuid(new DeleteOrgsOrganizationUuidRequest()
-							{{
-								setOrganizationUuid(orgIn.getModelObject().getUuid());
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					WebServicesCommon.client.deleteOrgsOrgUuid(new DeleteOrgsOrgUuidRequest()
+					{{
+						setOrgUuid(orgIn.getModelObject().getUuid());
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
 				}
@@ -237,13 +236,13 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("deleteOrganization error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
+
+
 	public void getUsersForOrganization(String organizationUuidIn, GetUsersForOrganizationCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -255,11 +254,11 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					GetOrgsOrganizationUuidUsersResult result = WebServicesCommon.client.getOrgsOrganizationUuidUsers(new GetOrgsOrganizationUuidUsersRequest()
-							{{
-								setOrganizationUuid(organizationUuidIn);
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					GetOrgsOrgUuidUsersResult result = WebServicesCommon.client.getOrgsOrgUuidUsers(new GetOrgsOrgUuidUsersRequest()
+					{{
+						setOrgUuid(organizationUuidIn);
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
@@ -270,13 +269,13 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("getUsersForOrganization error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful, retVal);
 			}
 		});
 	}
-	
-	
+
+
 	public void addUserToOrganization(String organizationUuidIn, String emailAddressIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -287,18 +286,18 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					PostOrgsOrganizationUuidUsersResult result = WebServicesCommon.client.postOrgsOrganizationUuidUsers(new PostOrgsOrganizationUuidUsersRequest()
-							{{
-								setEmailAddress(new EmailAddress() {{
-									setEmail(emailAddressIn);
-								}});
-								setOrganizationUuid(organizationUuidIn);
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					PostOrgsOrgUuidUsersResult result = WebServicesCommon.client.postOrgsOrgUuidUsers(new PostOrgsOrgUuidUsersRequest()
+					{{
+						setEmailAddress(new EmailAddress() {{
+							setEmail(emailAddressIn);
+						}});
+						setOrgUuid(organizationUuidIn);
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
 				}
@@ -306,13 +305,13 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("addUserToOrganization error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
+
+
 	public void removeUserFromOrganization(String organizationUuidIn, String emailAddressIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -323,31 +322,34 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					DeleteOrgsOrganizationUuidUsersUserEmailResult result = WebServicesCommon.client.deleteOrgsOrganizationUuidUsersUserEmail(new DeleteOrgsOrganizationUuidUsersUserEmailRequest()
-							{{
-								setUserEmail(emailAddressIn);
-								setOrganizationUuid(organizationUuidIn);
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					WebServicesCommon.client.postOrgsOrgUuidUsersRemoveuserfromorg(new PostOrgsOrgUuidUsersRemoveuserfromorgRequest()
+					{{
+						setEmailAddress( new EmailAddress()
+						{{
+							setEmail(emailAddressIn);
+						}});
+						setOrgUuid(organizationUuidIn);
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
-					wasSuccessful = (result != null);
+					wasSuccessful = true;
 				}
 				catch( Exception e )
 				{
 					ModelManager.this.logger.warn(String.format("removeUserFromOrganization error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
-	public void addDeviceToOrganization(String devNameIn, OrganizationWrapper orgIn, SimpleCallback cbIn)
+
+
+	public void addDeviceTypeToOrganization(String devNameIn, OrganizationWrapper orgIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -357,20 +359,20 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					WebServicesCommon.client.postOrgsOrganizationUuidDevices(new PostOrgsOrganizationUuidDevicesRequest()
-							{{
-								setOrganizationUuid(orgIn.getModelObject().getUuid());
-								
-								setCreateDeviceRequest(new CreateDeviceRequest()
-										{{
-											setName(devNameIn);
-										}});
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					WebServicesCommon.client.postOrgsOrgUuidDevtypes(new PostOrgsOrgUuidDevtypesRequest()
+					{{
+						setOrgUuid(orgIn.getModelObject().getUuid());
+
+						setCreateDeviceTypeRequest(new CreateDeviceTypeRequest()
+						{{
+							setName(devNameIn);
+						}});
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
 				}
@@ -378,14 +380,14 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("addDeviceToOrganization error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
-	public void updateDevice(DeviceWrapper devIn, SimpleCallback cbIn)
+
+
+	public void updateDeviceType(DeviceTypeWrapper devIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -395,20 +397,20 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuid(new PostOrgsOrganizationUuidDevicesDeviceUuidRequest()
-							{{
-								setDeviceUuid(devIn.getModelObject().getUuid());
-								setOrganizationUuid(devIn.getParent().getModelObject().getUuid());
-								setUpdateDeviceRequest(new UpdateDeviceRequest()
-										{{
-											setName(devIn.getModelObject().getName());
-										}});
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuid(new PostOrgsOrgUuidDevtypesDevTypeUuidRequest()
+					{{
+						setDevTypeUuid(devIn.getModelObject().getUuid());
+						setOrgUuid(devIn.getParent().getModelObject().getUuid());
+						setUpdateDeviceTypeRequest(new UpdateDeviceTypeRequest()
+						{{
+							setName(devIn.getModelObject().getName());
+						}});
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
 				}
@@ -416,14 +418,14 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("updateProcessor error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
-	public void deleteDevice(DeviceWrapper devIn, SimpleCallback cbIn)
+
+
+	public void deleteDeviceType(DeviceTypeWrapper devIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -433,16 +435,16 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					WebServicesCommon.client.deleteOrgsOrganizationUuidDevicesDeviceUuid(new DeleteOrgsOrganizationUuidDevicesDeviceUuidRequest()
-							{{
-								setDeviceUuid(devIn.getModelObject().getUuid());
-								setOrganizationUuid(devIn.getParent().getModelObject().getUuid());
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					WebServicesCommon.client.deleteOrgsOrgUuidDevtypesDevTypeUuid(new DeleteOrgsOrgUuidDevtypesDevTypeUuidRequest()
+					{{
+						setDevTypeUuid(devIn.getModelObject().getUuid());
+						setOrgUuid(devIn.getParent().getModelObject().getUuid());
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
 				}
@@ -450,14 +452,14 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("deleteDevice error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
-	public void addProcessorToDevice(String procNameIn, DeviceWrapper devIn, SimpleCallback cbIn)
+
+
+	public void addProcessorTypeToDevice(String procNameIn, DeviceTypeWrapper devIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -467,21 +469,21 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuidProcessors(new PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsRequest()
-							{{
-								setDeviceUuid(devIn.getModelObject().getUuid());
-								setOrganizationUuid(devIn.getParent().getModelObject().getUuid());
-								
-								setCreateProcRequest(new CreateProcRequest()
-										{{
-											setName(procNameIn);
-										}});
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuidProctypes(new PostOrgsOrgUuidDevtypesDevTypeUuidProctypesRequest()
+					{{
+						setDevTypeUuid(devIn.getModelObject().getUuid());
+						setOrgUuid(devIn.getParent().getModelObject().getUuid());
+
+						setCreateProcTypeRequest(new CreateProcTypeRequest()
+						{{
+							setName(procNameIn);
+						}});
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
 				}
@@ -489,14 +491,14 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("addProcessorToDevice error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
-	public void updateProcessor(ProcessorWrapper procIn, SimpleCallback cbIn)
+
+
+	public void updateProcessorType(ProcessorTypeWrapper procIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -506,22 +508,22 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuid(new PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidRequest()
-							{{
-								setProcessorUuid(procIn.getModelObject().getUuid());
-								setDeviceUuid(procIn.getParent().getModelObject().getUuid());
-								setOrganizationUuid(procIn.getParent().getParent().getModelObject().getUuid());
-								setUpdateProcRequest(new UpdateProcRequest()
-										{{
-											setName(procIn.getModelObject().getName());
-											setLatestFirmwareUuid(procIn.getModelObject().getLatestFirmwareUuid());
-										}});
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuid(new PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidRequest()
+					{{
+						setProcTypeUuid(procIn.getModelObject().getUuid());
+						setDevTypeUuid(procIn.getParent().getModelObject().getUuid());
+						setOrgUuid(procIn.getParent().getParent().getModelObject().getUuid());
+						setUpdateProcTypeRequest(new UpdateProcTypeRequest()
+						{{
+							setName(procIn.getModelObject().getName());
+							setLatestFirmwareUuid(procIn.getModelObject().getLatestFirmwareUuid());
+						}});
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
 				}
@@ -529,14 +531,14 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("updateProcessor error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
-	public void deleteProcessor(ProcessorWrapper procIn, SimpleCallback cbIn)
+
+
+	public void deleteProcessorType(ProcessorTypeWrapper procIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -546,17 +548,17 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					WebServicesCommon.client.deleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuid(new DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidRequest()
-							{{
-								setProcessorUuid(procIn.getModelObject().getUuid());
-								setDeviceUuid(procIn.getParent().getModelObject().getUuid());
-								setOrganizationUuid(procIn.getParent().getParent().getModelObject().getUuid());
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					WebServicesCommon.client.deleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuid(new DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidRequest()
+					{{
+						setProcTypeUuid(procIn.getModelObject().getUuid());
+						setDevTypeUuid(procIn.getParent().getModelObject().getUuid());
+						setOrgUuid(procIn.getParent().getParent().getModelObject().getUuid());
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
 				}
@@ -564,15 +566,15 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("deleteProcessor error: '%s", e.getMessage()));
 				}
-		
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
+
+
 	public void createNewFwImage(String fwImageNameIn, String procUuidIn, String devUuidIn, String orgUuidIn,
-								 CreateFwImageCallback cbIn)
+			CreateFwImageCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -583,19 +585,19 @@ public class ModelManager
 				String newUuid = null;
 				try
 				{
-					PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult result = WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimages(new PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest()
-							{{
-								setCreateFwRequest(new CreateFwRequest() {{
-									setName(fwImageNameIn);
-								}});
-								setProcessorUuid(procUuidIn);
-								setDeviceUuid(devUuidIn);
-								setOrganizationUuid(orgUuidIn);
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
-									.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-									.build()
-									));
+					PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesResult result = WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimages(new PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesRequest()
+					{{
+						setCreateFwRequest(new CreateFwRequest() {{
+							setName(fwImageNameIn);
+						}});
+						setProcTypeUuid(procUuidIn);
+						setDevTypeUuid(devUuidIn);
+						setOrgUuid(orgUuidIn);
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
+							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+							.build()
+							));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
@@ -605,15 +607,15 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("removeUserFromOrganization error: '%s", e.getMessage()));
 				}
-				
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful, newUuid);
 			}
 		});
 	}
-	
-	
+
+
 	public void uploadFirmwareImage(String fwUuidIn, String procUuidIn, String devUuidIn, String orgUuidIn, 
-									File fwImageIn, UploadFwImageCallback cbIn)
+			File fwImageIn, UploadFwImageCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -628,10 +630,10 @@ public class ModelManager
 					return;
 				}
 				ModelManager.this.logger.debug(String.format("uploading to '%s'", url));
-				
+
 				// we have a valid URL...put it
 				HttpPut put = new HttpPut(url);
-				
+
 				// setup our file body and listener
 				FileBodyWithProgress fb = new FileBodyWithProgress(fwImageIn);
 				fb.addListener(new ProgessFileEntityListener()
@@ -643,23 +645,23 @@ public class ModelManager
 					}
 				});
 				put.setEntity(new FileEntity(fwImageIn));
-//				put.setEntity(MultipartEntityBuilder.create().addPart("bin", fb).build());
-				
+				//				put.setEntity(MultipartEntityBuilder.create().addPart("bin", fb).build());
+
 				// actually do the put
 				boolean wasSuccessful = false;
 				try
 				{
-				    HttpClients.createDefault().execute(put);
+					HttpClients.createDefault().execute(put);
 					wasSuccessful = true;
 				}
 				catch( Exception e ) { }
-				
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
+
+
 	public void updateFirmwareImage(FwImageWrapper fwIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -670,24 +672,24 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult result = WebServicesCommon.client.postOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuid(new PostOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest()
-							{{
-								setUpdateFwRequest(new UpdateFwRequest()
-								{{
-									setName(fwIn.getModelObject().getName());
-									setToVersionUuid(fwIn.getModelObject().getToVersionUuid());
-								}});
-								
-								setFwUuid(fwIn.getModelObject().getUuid());
-								setProcessorUuid(fwIn.getParent().getModelObject().getUuid());
-								setDeviceUuid(fwIn.getParent().getParent().getModelObject().getUuid());
-								setOrganizationUuid(fwIn.getParent().getParent().getParent().getModelObject().getUuid());
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidResult result = WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuid(new PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidRequest()
+					{{
+						setUpdateFwRequest(new UpdateFwRequest()
+						{{
+							setName(fwIn.getModelObject().getName());
+							setToVersionUuid(fwIn.getModelObject().getToVersionUuid());
+						}});
+
+						setFwUuid(fwIn.getModelObject().getUuid());
+						setProcTypeUuid(fwIn.getParent().getModelObject().getUuid());
+						setDevTypeUuid(fwIn.getParent().getParent().getModelObject().getUuid());
+						setOrgUuid(fwIn.getParent().getParent().getParent().getModelObject().getUuid());
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
 				}
@@ -695,13 +697,13 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("deleteFirmwareImage error: '%s", e.getMessage()));
 				}
-				
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-	
-	
+
+
 	public void deleteFirmwareImage(FwImageWrapper fwIn, SimpleCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
@@ -712,18 +714,18 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidResult result = WebServicesCommon.client.deleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuid(new DeleteOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidRequest()
-							{{
-								setOrganizationUuid(fwIn.getParent().getParent().getParent().getModelObject().getUuid());
-								setDeviceUuid(fwIn.getParent().getParent().getModelObject().getUuid());
-								setProcessorUuid(fwIn.getParent().getModelObject().getUuid());
-								setFwUuid(fwIn.getModelObject().getUuid());
-							}}
-							.sdkRequestConfig(SdkRequestConfig.builder()
+					DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidResult result = WebServicesCommon.client.deleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuid(new DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidRequest()
+					{{
+						setOrgUuid(fwIn.getParent().getParent().getParent().getModelObject().getUuid());
+						setDevTypeUuid(fwIn.getParent().getParent().getModelObject().getUuid());
+						setProcTypeUuid(fwIn.getParent().getModelObject().getUuid());
+						setFwUuid(fwIn.getModelObject().getUuid());
+					}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 							.build()
 							));
-					
+
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
 				}
@@ -731,88 +733,88 @@ public class ModelManager
 				{
 					ModelManager.this.logger.warn(String.format("deleteFirmwareImage error: '%s", e.getMessage()));
 				}
-				
+
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
 	}
-		
-	
+
+
 	public static ModelManager getSingleton()
 	{
 		return SINGLETON;
 	}
-	
 
-	private List<DeviceArrayItem> getDevicesForOrganization(String orgUuidIn)
-	{
-		GetOrgsOrganizationUuidDevicesResult result = WebServicesCommon.client.getOrgsOrganizationUuidDevices(new GetOrgsOrganizationUuidDevicesRequest()
-				{{
-					setOrganizationUuid(orgUuidIn);
-				}}
-				.sdkRequestConfig(SdkRequestConfig.builder()
-				.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-				.build()
-				));
-		
-		// if we made it here without exception, we're good
-		return result.getDeviceArray();
-	}
-	
-	
-	private List<ProcessorArrayItem> getProcessorsForDeviceAndOrganization(String devUuidIn, String orgUuidIn)
-	{
-		GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsResult result = WebServicesCommon.client.getOrgsOrganizationUuidDevicesDeviceUuidProcessors(new GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsRequest()
-				{{
-					setDeviceUuid(devUuidIn);
-					setOrganizationUuid(orgUuidIn);
 
-				}}
-				.sdkRequestConfig(SdkRequestConfig.builder()
-				.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-				.build()
-				));
-		
-		// if we made it here without exception, we're good
-		return result.getProcessorArray();
-	}
-	
-	
-	private List<FwImageArrayItem> getFwImagesForProcessorAndDeviceAndOrganization(String procUuidIn, String devUuidIn, String orgUuidIn)
+	private List<DeviceTypeArrayItem> getDeviceTypesForOrganization(String orgUuidIn)
 	{
-		GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesResult result = WebServicesCommon.client.getOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimages(new GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesRequest()
-				{{
-					setProcessorUuid(procUuidIn);
-					setDeviceUuid(devUuidIn);
-					setOrganizationUuid(orgUuidIn);
-				}}
-				.sdkRequestConfig(SdkRequestConfig.builder()
+		GetOrgsOrgUuidDevtypesResult result = WebServicesCommon.client.getOrgsOrgUuidDevtypes(new GetOrgsOrgUuidDevtypesRequest()
+		{{
+			setOrgUuid(orgUuidIn);
+		}}
+		.sdkRequestConfig(SdkRequestConfig.builder()
 				.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 				.build()
 				));
-		
+
+		// if we made it here without exception, we're good
+		return result.getDeviceTypeArray();
+	}
+
+
+	private List<ProcTypeArrayItem> getProcessorTypesForDeviceAndOrganization(String devUuidIn, String orgUuidIn)
+	{
+		GetOrgsOrgUuidDevtypesDevTypeUuidProctypesResult result = WebServicesCommon.client.getOrgsOrgUuidDevtypesDevTypeUuidProctypes(new GetOrgsOrgUuidDevtypesDevTypeUuidProctypesRequest()
+		{{
+			setDevTypeUuid(devUuidIn);
+			setOrgUuid(orgUuidIn);
+
+		}}
+		.sdkRequestConfig(SdkRequestConfig.builder()
+				.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+				.build()
+				));
+
+		// if we made it here without exception, we're good
+		return result.getProcTypeArray();
+	}
+
+
+	private List<FwImageArrayItem> getFwImagesForProcessorTypeAndDeviceTypeAndOrganization(String procUuidIn, String devUuidIn, String orgUuidIn)
+	{
+		GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesResult result = WebServicesCommon.client.getOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimages(new GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesRequest()
+		{{
+			setProcTypeUuid(procUuidIn);
+			setDevTypeUuid(devUuidIn);
+			setOrgUuid(orgUuidIn);
+		}}
+		.sdkRequestConfig(SdkRequestConfig.builder()
+				.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+				.build()
+				));
+
 		// if we made it here without exception, we're good
 		return result.getFwImageArray();
 	}
-	
-	
+
+
 	private String getUploadUrlForFwUuid(String fwUuidIn, String procUuidIn, String devUuidIn, String orgUuidIn)
 	{
 		String retVal = null;
 		try
 		{
-			GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlinkResult result = WebServicesCommon.client.getOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlink(new GetOrgsOrganizationUuidDevicesDeviceUuidProcessorsProcessorUuidFwimagesFwUuidFwuploadlinkRequest()
-					{{
-						setFwUuid(fwUuidIn);
-						setProcessorUuid(procUuidIn);
-						setDeviceUuid(devUuidIn);
-						setOrganizationUuid(orgUuidIn);
-					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
+			GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidFwuploadlinkResult result = WebServicesCommon.client.getOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidFwuploadlink(new GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidFwuploadlinkRequest()
+			{{
+				setFwUuid(fwUuidIn);
+				setProcTypeUuid(procUuidIn);
+				setDevTypeUuid(devUuidIn);
+				setOrgUuid(orgUuidIn);
+			}}
+			.sdkRequestConfig(SdkRequestConfig.builder()
 					.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
 					.build()
 					));
-			
+
 			// if we made it here without exception, we're good
 			retVal = result.getFwUploadLinkResponse().getLink();
 		}
@@ -820,7 +822,7 @@ public class ModelManager
 		{
 			ModelManager.this.logger.warn(String.format("deleteFirmwareImage error: '%s", e.getMessage()));
 		}
-		
+
 		return retVal;
 	}
 }

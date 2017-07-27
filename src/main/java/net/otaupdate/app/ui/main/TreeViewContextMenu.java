@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import net.otaupdate.app.model.DeviceWrapper;
+import net.otaupdate.app.model.DeviceTypeWrapper;
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.CreateFwImageCallback;
@@ -25,7 +25,7 @@ import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.model.ModelManager.UploadFwImageCallback;
 import net.otaupdate.app.ui.util.ProgressDialog;
 import net.otaupdate.app.model.OrganizationWrapper;
-import net.otaupdate.app.model.ProcessorWrapper;
+import net.otaupdate.app.model.ProcessorTypeWrapper;
 
 public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 {
@@ -107,13 +107,13 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 			this.mnuAdd.setVisible(true);
 			this.mnuDelete.setVisible(true);
 		}
-		else if( selectedItem instanceof DeviceWrapper )
+		else if( selectedItem instanceof DeviceTypeWrapper )
 		{
 			this.mnuAdd.setText("Add Processor");
 			this.mnuAdd.setVisible(true);
 			this.mnuDelete.setVisible(true);
 		}
-		else if( selectedItem instanceof ProcessorWrapper )
+		else if( selectedItem instanceof ProcessorTypeWrapper )
 		{
 			this.mnuAdd.setText("Add Firmware Image");
 			this.mnuAdd.setVisible(true);
@@ -147,13 +147,13 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 		{
 			this.addDeviceToOrganization((OrganizationWrapper)this.selectedItem);
 		}
-		else if( this.selectedItem instanceof DeviceWrapper )
+		else if( this.selectedItem instanceof DeviceTypeWrapper )
 		{
-			this.addProcessorToDevice((DeviceWrapper)this.selectedItem);
+			this.addProcessorToDevice((DeviceTypeWrapper)this.selectedItem);
 		}
-		else if( this.selectedItem instanceof ProcessorWrapper )
+		else if( this.selectedItem instanceof ProcessorTypeWrapper )
 		{
-			this.addFirmwareImageToProcessor((ProcessorWrapper)this.selectedItem);
+			this.addFirmwareImageToProcessor((ProcessorTypeWrapper)this.selectedItem);
 		}
 	}
 	
@@ -164,13 +164,13 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 		{
 			this.deleteOrganization((OrganizationWrapper)this.selectedItem);
 		}
-		else if( this.selectedItem instanceof DeviceWrapper )
+		else if( this.selectedItem instanceof DeviceTypeWrapper )
 		{
-			this.deleteDevice((DeviceWrapper)this.selectedItem);
+			this.deleteDevice((DeviceTypeWrapper)this.selectedItem);
 		}
-		else if( this.selectedItem instanceof ProcessorWrapper )
+		else if( this.selectedItem instanceof ProcessorTypeWrapper )
 		{
-			this.deleteProcessor((ProcessorWrapper)this.selectedItem);
+			this.deleteProcessor((ProcessorTypeWrapper)this.selectedItem);
 		}
 		else if( this.selectedItem instanceof FwImageWrapper )
 		{
@@ -217,7 +217,7 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 		String name = JOptionPane.showInputDialog(null, "Please enter name of new device", "New Device", JOptionPane.PLAIN_MESSAGE);
 		if( (name == null) || (name.length() == 0) ) return;
 		
-		ModelManager.getSingleton().addDeviceToOrganization(name, orgIn, new SimpleCallback()
+		ModelManager.getSingleton().addDeviceTypeToOrganization(name, orgIn, new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
@@ -229,9 +229,9 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 	}
 	
 	
-	private void deleteDevice(DeviceWrapper devIn)
+	private void deleteDevice(DeviceTypeWrapper devIn)
 	{
-		ModelManager.getSingleton().deleteDevice(devIn, new SimpleCallback()
+		ModelManager.getSingleton().deleteDeviceType(devIn, new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
@@ -243,13 +243,13 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 	}
 	
 	
-	private void addProcessorToDevice(DeviceWrapper devIn)
+	private void addProcessorToDevice(DeviceTypeWrapper devIn)
 	{
 		// get the processor name
 		String name = JOptionPane.showInputDialog(null, "Please enter name of new processor", "New Processor", JOptionPane.PLAIN_MESSAGE);
 		if( (name == null) || (name.length() == 0) ) return;
 		
-		ModelManager.getSingleton().addProcessorToDevice(name, devIn, new SimpleCallback()
+		ModelManager.getSingleton().addProcessorTypeToDevice(name, devIn, new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
@@ -261,9 +261,9 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 	}
 	
 	
-	private void deleteProcessor(ProcessorWrapper procIn)
+	private void deleteProcessor(ProcessorTypeWrapper procIn)
 	{
-		ModelManager.getSingleton().deleteProcessor(procIn, new SimpleCallback()
+		ModelManager.getSingleton().deleteProcessorType(procIn, new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
@@ -275,7 +275,7 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 	}
 	
 	
-	private void addFirmwareImageToProcessor(ProcessorWrapper procWrapperIn)
+	private void addFirmwareImageToProcessor(ProcessorTypeWrapper procWrapperIn)
 	{
 		// get the firmware image name
 		String name = JOptionPane.showInputDialog(null, "Please enter name of new firmware image", "New Firmware Image", JOptionPane.PLAIN_MESSAGE);

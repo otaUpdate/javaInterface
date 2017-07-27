@@ -11,10 +11,10 @@ public class FwImageWrapper implements Serializable
 	
 	
 	private final FwImageArrayItem fwai;
-	private final ProcessorWrapper parent;
+	private final ProcessorTypeWrapper parent;
 	
 	
-	public FwImageWrapper(FwImageArrayItem fwaiIn, ProcessorWrapper parentIn)
+	public FwImageWrapper(FwImageArrayItem fwaiIn, ProcessorTypeWrapper parentIn)
 	{
 		this.fwai = fwaiIn;
 		this.parent = parentIn;
@@ -27,7 +27,7 @@ public class FwImageWrapper implements Serializable
 	}
 	
 	
-	public ProcessorWrapper getParent()
+	public ProcessorTypeWrapper getParent()
 	{
 		return this.parent;
 	}

@@ -3,30 +3,30 @@ package net.otaupdate.app.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.otaupdate.app.sdk.model.ProcessorArrayItem;
+import net.otaupdate.app.sdk.model.ProcTypeArrayItem;
 
 
-public class ProcessorWrapper
+public class ProcessorTypeWrapper
 {
-	private final ProcessorArrayItem pai;
+	private final ProcTypeArrayItem ptai;
 	private final List<FwImageWrapper> fwImages = new ArrayList<FwImageWrapper>();
-	private final DeviceWrapper parent;
+	private final DeviceTypeWrapper parent;
 	
 	
-	public ProcessorWrapper(ProcessorArrayItem paiIn, DeviceWrapper parentIn)
+	public ProcessorTypeWrapper(ProcTypeArrayItem paiIn, DeviceTypeWrapper parentIn)
 	{
-		this.pai = paiIn;
+		this.ptai = paiIn;
 		this.parent = parentIn;
 	}
 	
 	
-	public ProcessorArrayItem getModelObject()
+	public ProcTypeArrayItem getModelObject()
 	{
-		return this.pai;
+		return this.ptai;
 	}
 	
 	
-	public DeviceWrapper getParent()
+	public DeviceTypeWrapper getParent()
 	{
 		return this.parent;
 	}
@@ -58,6 +58,6 @@ public class ProcessorWrapper
 	@Override
 	public String toString()
 	{
-		return this.pai.getName();
+		return this.ptai.getName();
 	}
 }

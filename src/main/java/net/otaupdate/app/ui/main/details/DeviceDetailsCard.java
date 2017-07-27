@@ -5,7 +5,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 
-import net.otaupdate.app.model.DeviceWrapper;
+import net.otaupdate.app.model.DeviceTypeWrapper;
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
@@ -29,7 +29,7 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 	private final JTextField txtName;
 	private final JLabel lblUuidValue;
 	
-	private DeviceWrapper dev = null;
+	private DeviceTypeWrapper dev = null;
 
 	
 	public DeviceDetailsCard()
@@ -61,7 +61,7 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 			{
 				DeviceDetailsCard.this.dev.getModelObject().setName(DeviceDetailsCard.this.txtName.getText());
 				
-				ModelManager.getSingleton().updateDevice(DeviceDetailsCard.this.dev, new SimpleCallback()
+				ModelManager.getSingleton().updateDeviceType(DeviceDetailsCard.this.dev, new SimpleCallback()
 				{
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
@@ -84,7 +84,7 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 	}
 
 	
-	public void setDevice(DeviceWrapper devIn)
+	public void setDevice(DeviceTypeWrapper devIn)
 	{
 		this.dev = devIn;
 		this.refreshUi();

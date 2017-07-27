@@ -6,10 +6,10 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.List;
 
-import net.otaupdate.app.model.DeviceWrapper;
+import net.otaupdate.app.model.DeviceTypeWrapper;
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.OrganizationWrapper;
-import net.otaupdate.app.model.ProcessorWrapper;
+import net.otaupdate.app.model.ProcessorTypeWrapper;
 import net.otaupdate.app.ui.cardmanager.CardManager;
 import net.otaupdate.app.ui.cardmanager.CardManager.CardTransitionCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
@@ -90,7 +90,7 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 	
 	
 	@Override
-	public void onDeviceSelected(DeviceWrapper devIn)
+	public void onDeviceSelected(DeviceTypeWrapper devIn)
 	{
 		this.cardManager.showCard(CARD_DEVICE_DETAILS, new CardTransitionCallback()
 		{
@@ -104,7 +104,7 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 	
 	
 	@Override
-	public void onProcessorSelected(ProcessorWrapper procIn)
+	public void onProcessorSelected(ProcessorTypeWrapper procIn)
 	{
 		this.cardManager.showCard(CARD_PROCESSOR_DETAILS, new CardTransitionCallback()
 		{
