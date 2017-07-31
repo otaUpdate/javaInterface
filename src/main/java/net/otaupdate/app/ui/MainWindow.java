@@ -20,7 +20,7 @@ import java.awt.BorderLayout;
 public class MainWindow extends JFrame
 {
 	private static final long serialVersionUID = -6416466165488197039L;
-	private static final int WIDTH_PX = 740;
+	private static final int WIDTH_PX = 920;
 	private static final int HEIGHT_PX = 580;
 	
 	private static final String CARD_LOGIN = "login";

@@ -1,4 +1,4 @@
-package net.otaupdate.app.ui.main.details;
+package net.otaupdate.app.ui.main.details.deviceType;
 
 import javax.swing.JPanel;
 import com.jgoodies.forms.layout.FormLayout;
@@ -75,9 +75,7 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 			{
 				if( FwImageDetailsCard.this.isUpdatingUi ) return;
 				
-				int selectedIndex = FwImageDetailsCard.this.tblUpgradeTo.getSelectedRow() - 1;
-				String upgradeTargetUuid = ((selectedIndex >= 0) && (selectedIndex < FwImageDetailsCard.this.allFws.size())) ? 
-										   FwImageDetailsCard.this.allFws.get(selectedIndex).getModelObject().getUuid() : "";
+				String upgradeTargetUuid = FwImageDetailsCard.this.tableModel.getUuidForRow(FwImageDetailsCard.this.tblUpgradeTo.getSelectedRow());
 				
 				FwImageDetailsCard.this.changeToVersionByUuid(upgradeTargetUuid);
 			}
@@ -139,7 +137,7 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 			public void actionPerformed(ActionEvent e)
 			{
 				Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-				clpbrd.setContents(new StringSelection(FwImageDetailsCard.this.fw.getModelObject().getUuid()), null);
+				clpbrd.setContents(new StringSelection(FwImageDetailsCard.this.fw.getUuid()), null);
 				JOptionPane.showMessageDialog(FwImageDetailsCard.this, "UUID copied to clipboard", "Firmware UUID", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
@@ -168,17 +166,16 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 		
 		this.isUpdatingUi = true;
 		
-		this.txtName.setText(this.fw.getModelObject().getName());
-		this.lblUuidValue.setText(this.fw.getModelObject().getUuid());
+		this.txtName.setText(this.fw.getName());
+		this.lblUuidValue.setText(this.fw.getUuid());
 		
 		this.tableModel.refresh(this.fw, this.allFws);
 		int selectedRowIndex = 0;
-		for( int i = 0; i < this.allFws.size(); i++ )
+		for( int i = 0; i < this.tblUpgradeTo.getRowCount(); i++ )
 		{
-			if( this.allFws.get(i).getModelObject().getUuid().equals(this.fw.getModelObject().getToVersionUuid()) )
+			if( this.tableModel.getUuidForRow(i).equals(this.fw.getToVersionUuid()) )
 			{
-				// +1 is to account for empty row at top (<none>)
-				selectedRowIndex = i+1;
+				selectedRowIndex = i;
 				break;
 			}
 		}
@@ -190,7 +187,7 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 	
 	private void changeToVersionByUuid(String toVersionUuidIn)
 	{
-		this.fw.getModelObject().setToVersionUuid(toVersionUuidIn);
+		this.fw.setToVersionUuid(toVersionUuidIn);
 		ModelManager.getSingleton().updateFirmwareImage(this.fw, new SimpleCallback()
 		{
 			@Override
@@ -207,7 +204,7 @@ public class FwImageDetailsCard extends JPanel implements IntelligentCard
 	
 	private void updateFwName(String newNameIn)
 	{
-		this.fw.getModelObject().setName(newNameIn);
+		this.fw.setName(newNameIn);
 		ModelManager.getSingleton().updateFirmwareImage(this.fw, new SimpleCallback()
 		{
 			@Override

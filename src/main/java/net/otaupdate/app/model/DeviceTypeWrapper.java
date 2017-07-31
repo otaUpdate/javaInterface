@@ -1,5 +1,6 @@
 package net.otaupdate.app.model;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +9,9 @@ import net.otaupdate.app.sdk.model.DeviceTypeArrayItem;
 
 public class DeviceTypeWrapper
 {
-	private final DeviceTypeArrayItem dai;
-	private final List<ProcessorTypeWrapper> processors = new ArrayList<ProcessorTypeWrapper>();
 	private final OrganizationWrapper parent;
+	private final DeviceTypeArrayItem dai;
+	private final List<ProcessorTypeWrapper> procTypes = new ArrayList<ProcessorTypeWrapper>();
 	
 	
 	public DeviceTypeWrapper(DeviceTypeArrayItem daiIn, OrganizationWrapper parentIn)
@@ -20,27 +21,39 @@ public class DeviceTypeWrapper
 	}
 	
 	
-	public DeviceTypeArrayItem getModelObject()
+	public void addProcType(ProcessorTypeWrapper dtwIn)
 	{
-		return this.dai;
+		this.procTypes.add(dtwIn);
 	}
 	
 	
-	public OrganizationWrapper getParent()
+	public List<ProcessorTypeWrapper> getProcTypes()
 	{
-		return this.parent;
+		return this.procTypes;
 	}
 	
 	
-	public void addProcessor(ProcessorTypeWrapper itemIn)
+	public String getName()
 	{
-		this.processors.add(itemIn);
+		return this.dai.getName();
 	}
 	
 	
-	public List<ProcessorTypeWrapper> getProcessors()
+	public void setName(String nameIn)
 	{
-		return this.processors;
+		this.dai.setName(nameIn);
+	}
+	
+	
+	public String getOrgUuid()
+	{
+		return this.parent.getUuid();
+	}
+	
+	
+	public String getUuid()
+	{
+		return this.dai.getUuid();
 	}
 	
 	

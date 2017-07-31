@@ -1,5 +1,6 @@
 package net.otaupdate.app.model;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +9,9 @@ import net.otaupdate.app.sdk.model.ProcTypeArrayItem;
 
 public class ProcessorTypeWrapper
 {
+	private final DeviceTypeWrapper parent;
 	private final ProcTypeArrayItem ptai;
 	private final List<FwImageWrapper> fwImages = new ArrayList<FwImageWrapper>();
-	private final DeviceTypeWrapper parent;
 	
 	
 	public ProcessorTypeWrapper(ProcTypeArrayItem paiIn, DeviceTypeWrapper parentIn)
@@ -20,38 +21,57 @@ public class ProcessorTypeWrapper
 	}
 	
 	
-	public ProcTypeArrayItem getModelObject()
+	public void addFwImage(FwImageWrapper dtwIn)
 	{
-		return this.ptai;
+		this.fwImages.add(dtwIn);
 	}
 	
 	
-	public DeviceTypeWrapper getParent()
-	{
-		return this.parent;
-	}
-	
-	
-	public void addFirmwareImage(FwImageWrapper itemIn)
-	{
-		this.fwImages.add(itemIn);
-	}
-	
-	
-	public List<FwImageWrapper> getFirmwareImages()
+	public List<FwImageWrapper> getFwImages()
 	{
 		return this.fwImages;
 	}
 	
 	
-	public FwImageWrapper getFwImageByUuid(String uuidIn)
+	public String getName()
 	{
-		for( FwImageWrapper currFwImage : this.fwImages )
-		{
-			if( currFwImage.getModelObject().getUuid().equals(uuidIn) ) return currFwImage;
-		}
-		
-		return null;
+		return this.ptai.getName();
+	}
+	
+	
+	public void setName(String nameIn)
+	{
+		this.ptai.setName(nameIn);
+	}
+	
+	
+	public String getLatestFwImageUuid()
+	{
+		return this.ptai.getLatestFirmwareUuid();
+	}
+	
+	
+	public void setLatestFwImageUuid(String lfuIn)
+	{
+		this.ptai.setLatestFirmwareUuid(lfuIn);
+	}
+	
+	
+	public String getOrgUuid()
+	{
+		return this.parent.getOrgUuid();
+	}
+	
+	
+	public String getDevTypeUuid()
+	{
+		return this.parent.getUuid();
+	}
+	
+	
+	public String getUuid()
+	{
+		return this.ptai.getUuid();
 	}
 	
 	

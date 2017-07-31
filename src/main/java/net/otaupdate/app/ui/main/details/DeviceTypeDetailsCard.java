@@ -9,6 +9,7 @@ import net.otaupdate.app.model.DeviceTypeWrapper;
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
+import net.otaupdate.app.ui.main.details.deviceType.DeviceTypeConfigurationPanel;
 
 import com.jgoodies.forms.layout.FormSpecs;
 import javax.swing.JLabel;
@@ -19,9 +20,10 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTabbedPane;
 
 
-public class DeviceDetailsCard extends JPanel implements IntelligentCard
+public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
 {
 	private static final long serialVersionUID = -8758246768261616073L;
 	
@@ -29,10 +31,13 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 	private final JTextField txtName;
 	private final JLabel lblUuidValue;
 	
-	private DeviceTypeWrapper dev = null;
+	private DeviceTypeWrapper dtw = null;
+
+
+	private DeviceTypeConfigurationPanel devTypeConfigurationPanel;
 
 	
-	public DeviceDetailsCard()
+	public DeviceTypeDetailsCard()
 	{
 		setBorder(new EmptyBorder(4, 0, 4, 4));
 		setLayout(new BorderLayout(0, 0));
@@ -59,14 +64,14 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				DeviceDetailsCard.this.dev.getModelObject().setName(DeviceDetailsCard.this.txtName.getText());
+				DeviceTypeDetailsCard.this.dtw.setName(DeviceTypeDetailsCard.this.txtName.getText());
 				
-				ModelManager.getSingleton().updateDeviceType(DeviceDetailsCard.this.dev, new SimpleCallback()
+				ModelManager.getSingleton().updateDeviceType(DeviceTypeDetailsCard.this.dtw, new SimpleCallback()
 				{
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
 					{
-						if( !wasSuccessfulIn ) JOptionPane.showMessageDialog(DeviceDetailsCard.this, "Error setting device name", "Error", JOptionPane.ERROR_MESSAGE);
+						if( !wasSuccessfulIn ) JOptionPane.showMessageDialog(DeviceTypeDetailsCard.this, "Error setting device type name", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				});
 			}
@@ -81,12 +86,22 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 		lblUuidValue = new JLabel("<unknown>");
 		lblUuidValue.setHorizontalAlignment(SwingConstants.TRAILING);
 		pnlDevDetails.add(lblUuidValue, "4, 4");
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		add(tabbedPane, BorderLayout.CENTER);
+		
+		devTypeConfigurationPanel = new DeviceTypeConfigurationPanel();
+		tabbedPane.addTab("Configuration", null, devTypeConfigurationPanel, null);
+		
+		JPanel pnlDeployment = new JPanel();
+		tabbedPane.addTab("Deployment", null, pnlDeployment, null);
 	}
 
 	
-	public void setDevice(DeviceTypeWrapper devIn)
+	public void setDevice(DeviceTypeWrapper dtwIn)
 	{
-		this.dev = devIn;
+		this.dtw = dtwIn;
+		this.devTypeConfigurationPanel.setDeviceType(dtwIn);
 		this.refreshUi();
 	}
 	
@@ -100,9 +115,9 @@ public class DeviceDetailsCard extends JPanel implements IntelligentCard
 	
 	private void refreshUi()
 	{
-		if( this.dev == null ) return;
+		if( this.dtw == null ) return;
 		
-		this.txtName.setText(this.dev.getModelObject().getName());
-		this.lblUuidValue.setText(this.dev.getModelObject().getUuid());
+		this.txtName.setText(this.dtw.getName());
+		this.lblUuidValue.setText(this.dtw.getUuid());
 	}
 }

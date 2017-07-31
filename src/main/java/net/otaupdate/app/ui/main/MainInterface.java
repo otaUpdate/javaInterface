@@ -4,24 +4,26 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.util.List;
 
 import net.otaupdate.app.model.DeviceTypeWrapper;
-import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.OrganizationWrapper;
-import net.otaupdate.app.model.ProcessorTypeWrapper;
 import net.otaupdate.app.ui.cardmanager.CardManager;
 import net.otaupdate.app.ui.cardmanager.CardManager.CardTransitionCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
-import net.otaupdate.app.ui.main.OtaTreeView.OtaTreeViewListener;
-import net.otaupdate.app.ui.main.details.DeviceDetailsCard;
+import net.otaupdate.app.ui.main.OrgAndDevTypeTree.OtaTreeViewListener;
+import net.otaupdate.app.ui.main.details.DeviceTypeDetailsCard;
 import net.otaupdate.app.ui.main.details.OrganizationDetailsCard;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-import net.otaupdate.app.ui.main.details.ProcessorDetailsCard;
-import net.otaupdate.app.ui.main.details.FwImageDetailsCard;
+import javax.swing.SwingUtilities;
+
+import net.otaupdate.app.ui.main.details.deviceType.FwImageDetailsCard;
+import net.otaupdate.app.ui.main.details.deviceType.ProcessorDetailsCard;
+
 import java.awt.Dimension;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainInterface extends JPanel implements IntelligentCard, OtaTreeViewListener
@@ -35,7 +37,7 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 	
 	
 	private final CardManager cardManager;
-	private final OtaTreeView otaTreeView;
+	private final OrgAndDevTypeTree otaTreeView;
 	
 	
 	public MainInterface()
@@ -59,7 +61,7 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 		lblPleaseSelectAn.setHorizontalAlignment(SwingConstants.CENTER);
 		pnlNoSelection.add(lblPleaseSelectAn, BorderLayout.CENTER);
 		
-		DeviceDetailsCard deviceDetailsCard = new DeviceDetailsCard();
+		DeviceTypeDetailsCard deviceDetailsCard = new DeviceTypeDetailsCard();
 		cardManager.add(deviceDetailsCard, CARD_DEVICE_DETAILS);
 		
 		ProcessorDetailsCard processorDetailsCard = new ProcessorDetailsCard();
@@ -68,7 +70,7 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 		FwImageDetailsCard fwImageDetailsCard = new FwImageDetailsCard();
 		cardManager.add(fwImageDetailsCard, CARD_FW_DETAILS);
 		
-		otaTreeView = new OtaTreeView();
+		otaTreeView = new OrgAndDevTypeTree();
 		otaTreeView.setMinimumSize(new Dimension(180, 29));
 		this.otaTreeView.addListener(this);
 		splitPane.setLeftComponent(otaTreeView);
@@ -97,44 +99,9 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 			@Override
 			public void onCardTransition(Component oldComponentIn, Component newComponentIn)
 			{
-				((DeviceDetailsCard)newComponentIn).setDevice(devIn);
+				((DeviceTypeDetailsCard)newComponentIn).setDevice(devIn);
 			}
 		});
-	}
-	
-	
-	@Override
-	public void onProcessorSelected(ProcessorTypeWrapper procIn)
-	{
-		this.cardManager.showCard(CARD_PROCESSOR_DETAILS, new CardTransitionCallback()
-		{
-			@Override
-			public void onCardTransition(Component oldComponentIn, Component newComponentIn)
-			{
-				((ProcessorDetailsCard)newComponentIn).setProcessor(procIn);
-			}
-		});
-	}
-	
-	
-	@Override
-	public void onFirmwareImageSelected(FwImageWrapper fwImageIn, List<FwImageWrapper> allFwImagesIn)
-	{
-		this.cardManager.showCard(CARD_FW_DETAILS, new CardTransitionCallback()
-		{
-			@Override
-			public void onCardTransition(Component oldComponentIn, Component newComponentIn)
-			{
-				((FwImageDetailsCard)newComponentIn).setFwImage(fwImageIn, allFwImagesIn);
-			}
-		});
-	}
-	
-	
-	@Override
-	public void onUploadFirmwareImageSelected()
-	{
-		
 	}
 
 
@@ -148,6 +115,20 @@ public class MainInterface extends JPanel implements IntelligentCard, OtaTreeVie
 	@Override
 	public void onBecomesVisible()
 	{
-		this.otaTreeView.refresh();
+		new Timer().schedule(new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						MainInterface.this.otaTreeView.refresh();
+					}
+				});
+			}
+		}, 1000);
 	}
 }

@@ -1,12 +1,10 @@
-package net.otaupdate.app.ui.main;
+package net.otaupdate.app.ui.main.details.deviceType;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
@@ -17,38 +15,28 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import net.otaupdate.app.model.DeviceTypeWrapper;
 import net.otaupdate.app.model.FwImageWrapper;
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.CreateFwImageCallback;
 import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.model.ModelManager.UploadFwImageCallback;
 import net.otaupdate.app.ui.util.ProgressDialog;
-import net.otaupdate.app.model.OrganizationWrapper;
 import net.otaupdate.app.model.ProcessorTypeWrapper;
 
-public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
+public class ProcTypeAndFwImageTreeContextMenu extends JPopupMenu implements PopupMenuListener
 {
 	private static final long serialVersionUID = -1274596196172586854L;
-	private static final String KEY_LASTDIR_FW = "lastDirectory_fw";
+	private static final String KEY_LASTDIR_FW = "lastFwDir";
 	
 	
-	public interface TreeViewContextMenuListener
-	{
-		public abstract void onUploadFirmwareImageSelected();
-	}
-	
-	
-	private final OtaTreeView parent;
+	private final DeviceTypeConfigurationPanel parent;
 	private JMenuItem mnuAdd;
 	private JMenuItem mnuDelete;
-	
-	private final List<TreeViewContextMenuListener> listeners = new ArrayList<TreeViewContextMenuListener>();
 	
 	private Object selectedItem = null;
 	
 
-	public TreeViewContextMenu(OtaTreeView parentIn)
+	public ProcTypeAndFwImageTreeContextMenu(DeviceTypeConfigurationPanel parentIn)
 	{
 		this.parent = parentIn;
 		this.addPopupMenuListener(this);
@@ -59,8 +47,7 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				// add pressed
-				TreeViewContextMenu.this.addItem();
+				ProcTypeAndFwImageTreeContextMenu.this.addItem();
 			}
 		});
 		this.add(mnuAdd);
@@ -71,17 +58,10 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				// delete pressed
-				TreeViewContextMenu.this.removeItem();
+				ProcTypeAndFwImageTreeContextMenu.this.removeItem();
 			}
 		});
 		this.add(mnuDelete);
-	}
-	
-	
-	public void addListener(TreeViewContextMenuListener listenerIn)
-	{
-		this.listeners.add(listenerIn);
 	}
 
 
@@ -97,21 +77,9 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 		}
 		else if( selectedItem instanceof String )
 		{
-			this.mnuAdd.setText("Add Organization");
-			this.mnuAdd.setVisible(true);
-			this.mnuDelete.setVisible(false);
-		}
-		else if( selectedItem instanceof OrganizationWrapper )
-		{
-			this.mnuAdd.setText("Add Device");
-			this.mnuAdd.setVisible(true);
-			this.mnuDelete.setVisible(true);
-		}
-		else if( selectedItem instanceof DeviceTypeWrapper )
-		{
 			this.mnuAdd.setText("Add Processor");
 			this.mnuAdd.setVisible(true);
-			this.mnuDelete.setVisible(true);
+			this.mnuDelete.setVisible(false);
 		}
 		else if( selectedItem instanceof ProcessorTypeWrapper )
 		{
@@ -141,150 +109,78 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 	{	
 		if( this.selectedItem instanceof String )
 		{
-			this.createOrganization();
-		}
-		else if( this.selectedItem instanceof OrganizationWrapper )
-		{
-			this.addDeviceToOrganization((OrganizationWrapper)this.selectedItem);
-		}
-		else if( this.selectedItem instanceof DeviceTypeWrapper )
-		{
-			this.addProcessorToDevice((DeviceTypeWrapper)this.selectedItem);
+			this.addProcessorType();
 		}
 		else if( this.selectedItem instanceof ProcessorTypeWrapper )
 		{
-			this.addFirmwareImageToProcessor((ProcessorTypeWrapper)this.selectedItem);
+			this.addFirmwareImage();
 		}
 	}
 	
 	
 	private void removeItem()
 	{
-		if( this.selectedItem instanceof OrganizationWrapper )
+		if( this.selectedItem instanceof ProcessorTypeWrapper )
 		{
-			this.deleteOrganization((OrganizationWrapper)this.selectedItem);
-		}
-		else if( this.selectedItem instanceof DeviceTypeWrapper )
-		{
-			this.deleteDevice((DeviceTypeWrapper)this.selectedItem);
-		}
-		else if( this.selectedItem instanceof ProcessorTypeWrapper )
-		{
-			this.deleteProcessor((ProcessorTypeWrapper)this.selectedItem);
+			this.deleteProcessorType();
 		}
 		else if( this.selectedItem instanceof FwImageWrapper )
 		{
-			this.deleteFirmwareImage((FwImageWrapper)this.selectedItem);
+			this.deleteFirmwareImage();
 		}
 	}
 	
 	
-	private void createOrganization()
+	private void addProcessorType()
 	{
 		// get the organization name
-		String name = JOptionPane.showInputDialog(null, "Please enter name of new organization", "New Organization", JOptionPane.PLAIN_MESSAGE);
-		if( (name == null) || (name.length() == 0) ) return;
-		
-		ModelManager.getSingleton().createNewOrganization(name, new SimpleCallback()
-		{
-			@Override
-			public void onCompletion(boolean wasSuccessfulIn)
-			{
-				if( wasSuccessfulIn ) TreeViewContextMenu.this.parent.refresh();
-				else JOptionPane.showMessageDialog(null, "Error creating new organization", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
-	}
-	
-	
-	private void deleteOrganization(OrganizationWrapper orgIn)
-	{
-		ModelManager.getSingleton().deleteOrganization(orgIn, new SimpleCallback()
-		{
-			@Override
-			public void onCompletion(boolean wasSuccessfulIn)
-			{
-				if( wasSuccessfulIn ) TreeViewContextMenu.this.parent.refresh();
-				else JOptionPane.showMessageDialog(null, "Error deleting organization", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
-	}
-	
-	
-	private void addDeviceToOrganization(OrganizationWrapper orgIn)
-	{
-		// get the device name
-		String name = JOptionPane.showInputDialog(null, "Please enter name of new device", "New Device", JOptionPane.PLAIN_MESSAGE);
-		if( (name == null) || (name.length() == 0) ) return;
-		
-		ModelManager.getSingleton().addDeviceTypeToOrganization(name, orgIn, new SimpleCallback()
-		{
-			@Override
-			public void onCompletion(boolean wasSuccessfulIn)
-			{
-				if( wasSuccessfulIn ) TreeViewContextMenu.this.parent.refresh();
-				else JOptionPane.showMessageDialog(null, "Error adding device to organization", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
-	}
-	
-	
-	private void deleteDevice(DeviceTypeWrapper devIn)
-	{
-		ModelManager.getSingleton().deleteDeviceType(devIn, new SimpleCallback()
-		{
-			@Override
-			public void onCompletion(boolean wasSuccessfulIn)
-			{
-				if( wasSuccessfulIn ) TreeViewContextMenu.this.parent.refresh();
-				else JOptionPane.showMessageDialog(null, "Error deleting device", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
-	}
-	
-	
-	private void addProcessorToDevice(DeviceTypeWrapper devIn)
-	{
-		// get the processor name
 		String name = JOptionPane.showInputDialog(null, "Please enter name of new processor", "New Processor", JOptionPane.PLAIN_MESSAGE);
 		if( (name == null) || (name.length() == 0) ) return;
 		
-		ModelManager.getSingleton().addProcessorTypeToDevice(name, devIn, new SimpleCallback()
+		ModelManager.getSingleton().addProcessorTypeToDevice(name, this.parent.getDeviceType(), new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
 			{
-				if( wasSuccessfulIn ) TreeViewContextMenu.this.parent.refresh();
-				else JOptionPane.showMessageDialog(null, "Error adding processor", "Error", JOptionPane.ERROR_MESSAGE);
+				if( wasSuccessfulIn )
+				{
+					ProcTypeAndFwImageTreeContextMenu.this.parent.refresh();
+				}
+				else JOptionPane.showMessageDialog(null, "Error adding processor type to device", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 	}
 	
 	
-	private void deleteProcessor(ProcessorTypeWrapper procIn)
+	private void deleteProcessorType()
 	{
-		ModelManager.getSingleton().deleteProcessorType(procIn, new SimpleCallback()
+		ModelManager.getSingleton().deleteProcessorType((ProcessorTypeWrapper)this.selectedItem, new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
 			{
-				if( wasSuccessfulIn ) TreeViewContextMenu.this.parent.refresh();
-				else JOptionPane.showMessageDialog(null, "Error deleting processor", "Error", JOptionPane.ERROR_MESSAGE);
+				if( wasSuccessfulIn )
+				{
+					ProcTypeAndFwImageTreeContextMenu.this.parent.refresh();
+				}
+				else JOptionPane.showMessageDialog(null, "Error deleting processor type", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 	}
 	
 	
-	private void addFirmwareImageToProcessor(ProcessorTypeWrapper procWrapperIn)
+	private void addFirmwareImage()
 	{
+		ProcessorTypeWrapper ptw = (ProcessorTypeWrapper)this.selectedItem; 
+		
 		// get the firmware image name
 		String name = JOptionPane.showInputDialog(null, "Please enter name of new firmware image", "New Firmware Image", JOptionPane.PLAIN_MESSAGE);
 		if( (name == null) || (name.length() == 0) ) return;
 		
 		// if we made it here, we're gonna try to create a new firmware image
-		String uuid_proc = procWrapperIn.getModelObject().getUuid();
-		String uuid_dev = procWrapperIn.getParent().getModelObject().getUuid();
-		String uuid_org = procWrapperIn.getParent().getParent().getModelObject().getUuid();
+		String uuid_proc = ptw.getUuid();
+		String uuid_dev = ptw.getDevTypeUuid();
+		String uuid_org = ptw.getOrgUuid();
 		
 		// now we need to create the firmware image (so we can get a UUID for it)
 		ModelManager.getSingleton().createNewFwImage(name, uuid_proc, uuid_dev, uuid_org, new CreateFwImageCallback()
@@ -307,7 +203,7 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 						@Override
 						public void run()
 						{
-							String defaultDir = Preferences.userNodeForPackage(TreeViewContextMenu.class).get(KEY_LASTDIR_FW, null);
+							String defaultDir = Preferences.userNodeForPackage(ProcTypeAndFwImageTreeContextMenu.class).get(KEY_LASTDIR_FW, null);
 							
 							// now we need to choose the file
 							JFileChooser jfc = new JFileChooser(defaultDir);
@@ -315,7 +211,7 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 							if( jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION )
 							{
 								// save the parent directory for later
-								Preferences.userNodeForPackage(TreeViewContextMenu.class).put(KEY_LASTDIR_FW, jfc.getSelectedFile().getParent());
+								Preferences.userNodeForPackage(ProcTypeAndFwImageTreeContextMenu.class).put(KEY_LASTDIR_FW, jfc.getSelectedFile().getParent());
 								
 								// file was chosen...upload it
 								ProgressDialog pd = new ProgressDialog();
@@ -343,11 +239,11 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 										{
 											JOptionPane.showMessageDialog(null, "Error creating firmware image", "Error", JOptionPane.ERROR_MESSAGE);
 										}
-										TreeViewContextMenu.this.parent.refresh();
+										ProcTypeAndFwImageTreeContextMenu.this.parent.refresh();
 									}
 								});
-							}	
-							TreeViewContextMenu.this.parent.refresh();
+							}
+							ProcTypeAndFwImageTreeContextMenu.this.parent.refresh();
 						}
 					});
 				}
@@ -357,24 +253,22 @@ public class TreeViewContextMenu extends JPopupMenu implements PopupMenuListener
 				}
 			}
 		});
+
 	}
 	
 	
-	private void deleteFirmwareImage(FwImageWrapper fwIn)
+	private void deleteFirmwareImage()
 	{
-		ModelManager.getSingleton().deleteFirmwareImage(fwIn, new SimpleCallback()
+		ModelManager.getSingleton().deleteFirmwareImage((FwImageWrapper)this.selectedItem, new SimpleCallback()
 		{
 			@Override
 			public void onCompletion(boolean wasSuccessfulIn)
 			{
 				if( wasSuccessfulIn )
 				{
-					TreeViewContextMenu.this.parent.refresh();
+					ProcTypeAndFwImageTreeContextMenu.this.parent.refresh();
 				}
-				else
-				{
-					JOptionPane.showMessageDialog(null, "Error deleting firmware image", "Error", JOptionPane.ERROR_MESSAGE);
-				}
+				else JOptionPane.showMessageDialog(null, "Error deleting firmware image", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 	}

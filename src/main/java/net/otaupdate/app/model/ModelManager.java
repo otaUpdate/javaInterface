@@ -67,7 +67,7 @@ public class ModelManager
 	private static final ModelManager SINGLETON = new ModelManager();
 
 
-	public interface RefreshTreeCallback
+	public interface RefreshOrgAndDevTypeTreeCallback
 	{
 		public void onCompletion(boolean wasSuccessfulIn, List<OrganizationWrapper> organizationsIn);
 	}
@@ -112,7 +112,7 @@ public class ModelManager
 	}
 
 
-	public void refreshTree(RefreshTreeCallback cbIn)
+	public void refreshOrgAndDevTypeTree(RefreshOrgAndDevTypeTreeCallback cbIn)
 	{
 		Dispatch.async(new Runnable()
 		{
@@ -130,7 +130,6 @@ public class ModelManager
 							));
 					List<OrganizationArrayItem> oais = result.getOrganizationArray();
 
-					// wrap the amazon-provided object nicely
 					for( OrganizationArrayItem currOai : oais )
 					{
 						OrganizationWrapper org = new OrganizationWrapper(currOai);
@@ -148,13 +147,13 @@ public class ModelManager
 								// fetch the firmware images for this processor
 								for( FwImageArrayItem currFwai : ModelManager.this.getFwImagesForProcessorTypeAndDeviceTypeAndOrganization(currPtai.getUuid(), currDtai.getUuid(), currOai.getUuid()) )
 								{
-									proc.addFirmwareImage(new FwImageWrapper(currFwai, proc));
+									proc.addFwImage(new FwImageWrapper(currFwai, proc));
 								}
 
-								device.addProcessor(proc);
+								device.addProcType(proc);
 							}
-
-							org.addDevice(device);
+							
+							org.addDevType(device);
 						}
 
 						organizations.add(org);
@@ -172,7 +171,7 @@ public class ModelManager
 			}
 		});
 	}
-
+	
 
 	public void createNewOrganization(String organizationNameIn, SimpleCallback cbIn)
 	{
@@ -222,7 +221,7 @@ public class ModelManager
 				{
 					WebServicesCommon.client.deleteOrgsOrgUuid(new DeleteOrgsOrgUuidRequest()
 					{{
-						setOrgUuid(orgIn.getModelObject().getUuid());
+						setOrgUuid(orgIn.getUuid());
 					}}
 					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
@@ -361,7 +360,7 @@ public class ModelManager
 				{
 					WebServicesCommon.client.postOrgsOrgUuidDevtypes(new PostOrgsOrgUuidDevtypesRequest()
 					{{
-						setOrgUuid(orgIn.getModelObject().getUuid());
+						setOrgUuid(orgIn.getUuid());
 
 						setCreateDeviceTypeRequest(new CreateDeviceTypeRequest()
 						{{
@@ -399,11 +398,11 @@ public class ModelManager
 				{
 					WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuid(new PostOrgsOrgUuidDevtypesDevTypeUuidRequest()
 					{{
-						setDevTypeUuid(devIn.getModelObject().getUuid());
-						setOrgUuid(devIn.getParent().getModelObject().getUuid());
+						setDevTypeUuid(devIn.getUuid());
+						setOrgUuid(devIn.getOrgUuid());
 						setUpdateDeviceTypeRequest(new UpdateDeviceTypeRequest()
 						{{
-							setName(devIn.getModelObject().getName());
+							setName(devIn.getName());
 						}});
 					}}
 					.sdkRequestConfig(SdkRequestConfig.builder()
@@ -437,8 +436,8 @@ public class ModelManager
 				{
 					WebServicesCommon.client.deleteOrgsOrgUuidDevtypesDevTypeUuid(new DeleteOrgsOrgUuidDevtypesDevTypeUuidRequest()
 					{{
-						setDevTypeUuid(devIn.getModelObject().getUuid());
-						setOrgUuid(devIn.getParent().getModelObject().getUuid());
+						setDevTypeUuid(devIn.getUuid());
+						setOrgUuid(devIn.getOrgUuid());
 					}}
 					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
@@ -471,8 +470,8 @@ public class ModelManager
 				{
 					WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuidProctypes(new PostOrgsOrgUuidDevtypesDevTypeUuidProctypesRequest()
 					{{
-						setDevTypeUuid(devIn.getModelObject().getUuid());
-						setOrgUuid(devIn.getParent().getModelObject().getUuid());
+						setDevTypeUuid(devIn.getUuid());
+						setOrgUuid(devIn.getOrgUuid());
 
 						setCreateProcTypeRequest(new CreateProcTypeRequest()
 						{{
@@ -510,13 +509,13 @@ public class ModelManager
 				{
 					WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuid(new PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidRequest()
 					{{
-						setProcTypeUuid(procIn.getModelObject().getUuid());
-						setDevTypeUuid(procIn.getParent().getModelObject().getUuid());
-						setOrgUuid(procIn.getParent().getParent().getModelObject().getUuid());
+						setProcTypeUuid(procIn.getUuid());
+						setDevTypeUuid(procIn.getDevTypeUuid());
+						setOrgUuid(procIn.getOrgUuid());
 						setUpdateProcTypeRequest(new UpdateProcTypeRequest()
 						{{
-							setName(procIn.getModelObject().getName());
-							setLatestFirmwareUuid(procIn.getModelObject().getLatestFirmwareUuid());
+							setName(procIn.getName());
+							setLatestFirmwareUuid(procIn.getLatestFwImageUuid());
 						}});
 					}}
 					.sdkRequestConfig(SdkRequestConfig.builder()
@@ -550,9 +549,9 @@ public class ModelManager
 				{
 					WebServicesCommon.client.deleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuid(new DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidRequest()
 					{{
-						setProcTypeUuid(procIn.getModelObject().getUuid());
-						setDevTypeUuid(procIn.getParent().getModelObject().getUuid());
-						setOrgUuid(procIn.getParent().getParent().getModelObject().getUuid());
+						setProcTypeUuid(procIn.getUuid());
+						setDevTypeUuid(procIn.getDevTypeUuid());
+						setOrgUuid(procIn.getOrgUuid());
 					}}
 					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
@@ -676,14 +675,14 @@ public class ModelManager
 					{{
 						setUpdateFwRequest(new UpdateFwRequest()
 						{{
-							setName(fwIn.getModelObject().getName());
-							setToVersionUuid(fwIn.getModelObject().getToVersionUuid());
+							setName(fwIn.getName());
+							setToVersionUuid(fwIn.getToVersionUuid());
 						}});
 
-						setFwUuid(fwIn.getModelObject().getUuid());
-						setProcTypeUuid(fwIn.getParent().getModelObject().getUuid());
-						setDevTypeUuid(fwIn.getParent().getParent().getModelObject().getUuid());
-						setOrgUuid(fwIn.getParent().getParent().getParent().getModelObject().getUuid());
+						setFwUuid(fwIn.getUuid());
+						setProcTypeUuid(fwIn.getProcTypeUuid());
+						setDevTypeUuid(fwIn.getDevTypeUuid());
+						setOrgUuid(fwIn.getOrgUuid());
 					}}
 					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
@@ -716,10 +715,10 @@ public class ModelManager
 				{
 					DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidResult result = WebServicesCommon.client.deleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuid(new DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidRequest()
 					{{
-						setOrgUuid(fwIn.getParent().getParent().getParent().getModelObject().getUuid());
-						setDevTypeUuid(fwIn.getParent().getParent().getModelObject().getUuid());
-						setProcTypeUuid(fwIn.getParent().getModelObject().getUuid());
-						setFwUuid(fwIn.getModelObject().getUuid());
+						setFwUuid(fwIn.getUuid());
+						setProcTypeUuid(fwIn.getProcTypeUuid());
+						setDevTypeUuid(fwIn.getDevTypeUuid());
+						setOrgUuid(fwIn.getOrgUuid());
 					}}
 					.sdkRequestConfig(SdkRequestConfig.builder()
 							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))

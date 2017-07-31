@@ -1,4 +1,4 @@
-package net.otaupdate.app.ui.main.details;
+package net.otaupdate.app.ui.main.details.deviceType;
 
 import javax.swing.JPanel;
 import com.jgoodies.forms.layout.FormLayout;
@@ -26,11 +26,9 @@ import java.util.Map;
 
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 
 import javax.swing.DefaultComboBoxModel;
 
-import java.awt.GridLayout;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -70,6 +68,8 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,}));
 		
 		JLabel lblName = new JLabel("Name:");
@@ -82,7 +82,7 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 			{
 				if( ProcessorDetailsCard.this.isUpdatingUi ) return;
 				
-				ProcessorDetailsCard.this.proc.getModelObject().setName(ProcessorDetailsCard.this.txtName.getText());
+				ProcessorDetailsCard.this.proc.setName(ProcessorDetailsCard.this.txtName.getText());
 				
 				ModelManager.getSingleton().updateProcessorType(ProcessorDetailsCard.this.proc, new SimpleCallback()
 				{
@@ -116,8 +116,8 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 				if( ProcessorDetailsCard.this.isUpdatingUi ) return;
 				
 				Object selectedItem = (Object)ProcessorDetailsCard.this.cmbLatestFirmwareVersion.getSelectedItem();
-				String latestFwVersion = (selectedItem instanceof FwImageWrapper) ? ((FwImageWrapper)selectedItem).getModelObject().getUuid() : ""; 
-				ProcessorDetailsCard.this.proc.getModelObject().setLatestFirmwareUuid(latestFwVersion);
+				String latestFwVersion = (selectedItem instanceof FwImageWrapper) ? ((FwImageWrapper)selectedItem).getUuid() : ""; 
+				ProcessorDetailsCard.this.proc.setLatestFwImageUuid(latestFwVersion);
 				
 				ModelManager.getSingleton().updateProcessorType(ProcessorDetailsCard.this.proc, new SimpleCallback()
 				{
@@ -131,14 +131,17 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 		});
 		pnlDevDetails.add(cmbLatestFirmwareVersion, "4, 6");
 		
+		JLabel lblMigrationVisualization = new JLabel("Migration Visualization:");
+		pnlDevDetails.add(lblMigrationVisualization, "2, 8");
+		
 		fwGraph = new mxGraph();
 		
-		JPanel pnlMigrationViz = new JPanel();
-		pnlMigrationViz.setBorder(new TitledBorder(null, "Migration Visualization", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(pnlMigrationViz, BorderLayout.CENTER);
-		pnlMigrationViz.setLayout(new GridLayout(0, 1, 0, 0));
+		JPanel pnlVizContainer = new JPanel();
+		pnlVizContainer.setBorder(new EmptyBorder(0, 8, 8, 8));
+		add(pnlVizContainer, BorderLayout.CENTER);
+		pnlVizContainer.setLayout(new BorderLayout(0, 0));
 		mxGraphComponent graphComponent = new mxGraphComponent(this.fwGraph);
-		pnlMigrationViz.add(graphComponent);
+		pnlVizContainer.add(graphComponent);
 		graphComponent.setDragEnabled(false);
 	}
 
@@ -163,8 +166,8 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 		
 		this.isUpdatingUi = true;
 		
-		this.txtName.setText(this.proc.getModelObject().getName());
-		this.lblUuidValue.setText(this.proc.getModelObject().getUuid());
+		this.txtName.setText(this.proc.getName());
+		this.lblUuidValue.setText(this.proc.getUuid());
 	
 		this.setupDropdown();
 		this.setupGraph();
@@ -182,21 +185,21 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 			@Override
 			public int getSize()
 			{
-				return ProcessorDetailsCard.this.proc.getFirmwareImages().size() + 1;
+				return ProcessorDetailsCard.this.proc.getFwImages().size() + 1;
 			}
 			
 			@Override
 			public Object getElementAt(int index)
 			{
-				return (index == 0 ) ? "<none>" : ProcessorDetailsCard.this.proc.getFirmwareImages().get(index-1);
+				return (index == 0 ) ? "<none>" : ProcessorDetailsCard.this.proc.getFwImages().get(index-1);
 			}
 		});
 		
 		// make sure the correct item is selected (default first)
 		this.cmbLatestFirmwareVersion.setSelectedIndex(0);
-		for( int i = 0; i < this.proc.getFirmwareImages().size(); i++ )
+		for( int i = 0; i < this.proc.getFwImages().size(); i++ )
 		{
-			if( this.proc.getFirmwareImages().get(i).getModelObject().getUuid().equals(this.proc.getModelObject().getLatestFirmwareUuid()) )
+			if( this.proc.getFwImages().get(i).getUuid().equals(this.proc.getLatestFwImageUuid()) )
 			{
 				this.cmbLatestFirmwareVersion.setSelectedIndex(i+1);
 				break;
@@ -217,19 +220,19 @@ public class ProcessorDetailsCard extends JPanel implements IntelligentCard
 			Map<String, Object> uuidToVertices = new HashMap<String, Object>();
 			
 			// create our vertices
-			for( FwImageWrapper currFwImage : this.proc.getFirmwareImages() )
+			for( FwImageWrapper currFwImage : this.proc.getFwImages() )
 			{
 				mxCell newVert = (mxCell)this.fwGraph.insertVertex(parent, null, currFwImage, 20, 20, 80, 30);
 				newVert.setConnectable(false);
 				
-				uuidToVertices.put(currFwImage.getModelObject().getUuid(), newVert);
+				uuidToVertices.put(currFwImage.getUuid(), newVert);
 			}
 			
 			// create our edges
-			for( FwImageWrapper currFwImage : this.proc.getFirmwareImages() )
+			for( FwImageWrapper currFwImage : this.proc.getFwImages() )
 			{
-				Object vert_from = uuidToVertices.get(currFwImage.getModelObject().getUuid());
-				Object vert_to = uuidToVertices.get(currFwImage.getModelObject().getToVersionUuid());
+				Object vert_from = uuidToVertices.get(currFwImage.getUuid());
+				Object vert_to = uuidToVertices.get(currFwImage.getToVersionUuid());
 				
 				if( (vert_from != null) && (vert_to != null) )
 				{

@@ -141,9 +141,9 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 	{
 		if( this.org == null ) return;
 		
-		this.txtName.setText(this.org.getModelObject().getName());
-		this.lblUuidValue.setText(this.org.getModelObject().getUuid());
-		this.tableModel.refreshForOrganizationUuid(this.org.getModelObject().getUuid());
+		this.txtName.setText(this.org.getName());
+		this.lblUuidValue.setText(this.org.getUuid());
+		this.tableModel.refreshForOrganizationUuid(this.org.getUuid());
 	}
 	
 	
@@ -152,7 +152,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 		String emailToAdd = this.txtEmailToAdd.getText();
 		if( emailToAdd.isEmpty() ) return;
 		
-		ModelManager.getSingleton().addUserToOrganization(this.org.getModelObject().getUuid(), this.txtEmailToAdd.getText(),
+		ModelManager.getSingleton().addUserToOrganization(this.org.getUuid(), this.txtEmailToAdd.getText(),
 				new SimpleCallback() {
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
@@ -160,7 +160,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 						if( wasSuccessfulIn )
 						{
 							// refresh our user table
-							OrganizationDetailsCard.this.tableModel.refreshForOrganizationUuid(OrganizationDetailsCard.this.org.getModelObject().getUuid());
+							OrganizationDetailsCard.this.tableModel.refreshForOrganizationUuid(OrganizationDetailsCard.this.org.getUuid());
 						}
 						else
 						{
@@ -171,7 +171,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 					}
 		});
 		
-		this.tableModel.refreshForOrganizationUuid(this.org.getModelObject().getUuid());
+		this.tableModel.refreshForOrganizationUuid(this.org.getUuid());
 	}
 	
 	
@@ -183,7 +183,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 		OrganizationUserArrayItem user = ((OrganizationUsersTableModel)OrganizationDetailsCard.this.table.getModel()).getUserAtIndex(selRow);
 		if( user == null ) return;
 		
-		ModelManager.getSingleton().removeUserFromOrganization(this.org.getModelObject().getUuid(), user.getEmail(),
+		ModelManager.getSingleton().removeUserFromOrganization(this.org.getUuid(), user.getEmail(),
 				new SimpleCallback() {
 					@Override
 					public void onCompletion(boolean wasSuccessfulIn)
@@ -191,7 +191,7 @@ public class OrganizationDetailsCard extends JPanel implements IntelligentCard
 						if( wasSuccessfulIn )
 						{
 							// refresh our user table
-							OrganizationDetailsCard.this.tableModel.refreshForOrganizationUuid(OrganizationDetailsCard.this.org.getModelObject().getUuid());
+							OrganizationDetailsCard.this.tableModel.refreshForOrganizationUuid(OrganizationDetailsCard.this.org.getUuid());
 						}
 						else
 						{
