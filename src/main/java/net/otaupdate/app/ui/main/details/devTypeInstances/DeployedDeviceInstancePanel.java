@@ -83,6 +83,7 @@ public class DeployedDeviceInstancePanel extends JPanel
 		this.table.setColumnSelectionAllowed(false);
 		this.table.setRowSelectionAllowed(true);
 		this.table.setComponentPopupMenu(popupMenu);
+		this.table.setDefaultRenderer(CurrentFirmwareCellRenderer.CurrentFirmwareCellDataObject.class, new CurrentFirmwareCellRenderer());
 		add(new JScrollPane(this.table), BorderLayout.CENTER);
 		
 		JPanel panel = new JPanel();

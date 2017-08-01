@@ -1,6 +1,5 @@
 package net.otaupdate.app.ui.main.details.devTypeInstances;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -9,8 +8,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.ocpsoft.prettytime.PrettyTime;
-
-import com.amazonaws.util.DateUtils;
 
 import net.otaupdate.app.model.DeviceInstanceWrapper;
 import net.otaupdate.app.model.DeviceTypeWrapper;
@@ -87,6 +84,24 @@ public class DeployedInstanceTableModel extends AbstractTableModel
 
 	
 	@Override
+	public Class<?> getColumnClass(int columnIndex)
+	{
+		Class<?> retVal = String.class;
+		if( columnIndex > 0 )
+		{
+			int subProcIndex = (columnIndex - 1) % NUM_PROC_COLS;
+			
+			if( subProcIndex == 1 )
+			{
+				retVal = CurrentFirmwareCellRenderer.CurrentFirmwareCellDataObject.class;
+			}
+		}
+		
+		return retVal;
+	}
+	
+	
+	@Override
 	public int getColumnCount()
 	{
 		return (this.dtw != null) ? (1 + (this.dtw.getProcTypes().size() * NUM_PROC_COLS)) : 0;
@@ -127,7 +142,7 @@ public class DeployedInstanceTableModel extends AbstractTableModel
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		String retVal = null;
+		Object retVal = null;
 		
 		DeviceInstanceWrapper devInstance = this.devInstances.get(rowIndex);
 		if( devInstance == null ) return null;
@@ -147,8 +162,9 @@ public class DeployedInstanceTableModel extends AbstractTableModel
 			}
 			else if( subProcIndex == 1 )
 			{
-				retVal = devInstance.getCurrentFwImageNameForProcessorAtIndex(procIndex);
-				if( retVal == null ) retVal = "<unknown>";
+				String fwImageName = devInstance.getCurrentFwImageNameForProcessorAtIndex(procIndex);
+				Boolean isFwUpToDate = devInstance.getIsFwUpToDateForProcessorAtIndex(procIndex);
+				retVal = new CurrentFirmwareCellRenderer.CurrentFirmwareCellDataObject(fwImageName, isFwUpToDate);
 			}
 			else if ( subProcIndex == 2 )
 			{
