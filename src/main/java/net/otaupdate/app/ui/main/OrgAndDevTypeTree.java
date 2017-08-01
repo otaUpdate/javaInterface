@@ -84,7 +84,7 @@ public class OrgAndDevTypeTree extends JPanel
 		add(pnlButtons, BorderLayout.SOUTH);
 		pnlButtons.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnRefresh = new JButton("Refresh");
+		JButton btnRefresh = new JButton("Refresh Tree");
 		pnlButtons.add(btnRefresh, BorderLayout.CENTER);
 		btnRefresh.addActionListener(new ActionListener()
 		{

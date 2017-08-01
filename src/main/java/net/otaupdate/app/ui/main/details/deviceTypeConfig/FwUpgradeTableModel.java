@@ -1,4 +1,4 @@
-package net.otaupdate.app.ui.main.details.deviceType;
+package net.otaupdate.app.ui.main.details.deviceTypeConfig;
 
 import java.util.ArrayList;
 import java.util.Iterator;

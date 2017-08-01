@@ -13,13 +13,12 @@ import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 import net.otaupdate.app.ui.main.OrgAndDevTypeTree.OtaTreeViewListener;
 import net.otaupdate.app.ui.main.details.DeviceTypeDetailsCard;
 import net.otaupdate.app.ui.main.details.OrganizationDetailsCard;
+import net.otaupdate.app.ui.main.details.deviceTypeConfig.FwImageDetailsCard;
+import net.otaupdate.app.ui.main.details.deviceTypeConfig.ProcessorDetailsCard;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-
-import net.otaupdate.app.ui.main.details.deviceType.FwImageDetailsCard;
-import net.otaupdate.app.ui.main.details.deviceType.ProcessorDetailsCard;
 
 import java.awt.Dimension;
 import java.util.Timer;

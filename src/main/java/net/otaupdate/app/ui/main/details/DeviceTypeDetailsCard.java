@@ -9,7 +9,7 @@ import net.otaupdate.app.model.DeviceTypeWrapper;
 import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
-import net.otaupdate.app.ui.main.details.deviceType.DeviceTypeConfigurationPanel;
+import net.otaupdate.app.ui.main.details.deviceTypeConfig.DeviceTypeConfigurationPanel;
 
 import com.jgoodies.forms.layout.FormSpecs;
 import javax.swing.JLabel;
@@ -21,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
+import net.otaupdate.app.ui.main.details.devTypeInstances.DeployedDeviceInstancePanel;
 
 
 public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
@@ -35,6 +36,9 @@ public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
 
 
 	private DeviceTypeConfigurationPanel devTypeConfigurationPanel;
+
+
+	private final DeployedDeviceInstancePanel deployedDeviceInstancePanel;
 
 	
 	public DeviceTypeDetailsCard()
@@ -90,11 +94,11 @@ public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		add(tabbedPane, BorderLayout.CENTER);
 		
-		devTypeConfigurationPanel = new DeviceTypeConfigurationPanel();
-		tabbedPane.addTab("Configuration", null, devTypeConfigurationPanel, null);
+		this.devTypeConfigurationPanel = new DeviceTypeConfigurationPanel();
+		tabbedPane.addTab("Configuration", null, this.devTypeConfigurationPanel, null);
 		
-		JPanel pnlDeployment = new JPanel();
-		tabbedPane.addTab("Deployment", null, pnlDeployment, null);
+		this.deployedDeviceInstancePanel = new DeployedDeviceInstancePanel();
+		tabbedPane.addTab("Deployed Instances", null, this.deployedDeviceInstancePanel, null);
 	}
 
 	
@@ -102,6 +106,7 @@ public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
 	{
 		this.dtw = dtwIn;
 		this.devTypeConfigurationPanel.setDeviceType(dtwIn);
+		this.deployedDeviceInstancePanel.setDeviceType(dtwIn);
 		this.refreshUi();
 	}
 	

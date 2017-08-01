@@ -2,7 +2,10 @@ package net.otaupdate.app.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.FileEntity;
@@ -14,18 +17,23 @@ import com.amazonaws.opensdk.SdkRequestConfig;
 
 import net.otaupdate.app.AuthorizationManager;
 import net.otaupdate.app.WebServicesCommon;
+import net.otaupdate.app.sdk.model.CreateDeviceRequest;
 import net.otaupdate.app.sdk.model.CreateDeviceTypeRequest;
 import net.otaupdate.app.sdk.model.CreateFwRequest;
 import net.otaupdate.app.sdk.model.CreateOrgRequest;
 import net.otaupdate.app.sdk.model.CreateProcTypeRequest;
+import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidDevicesDevSerialNumberRequest;
 import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidRequest;
 import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidResult;
 import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidRequest;
 import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidDevtypesDevTypeUuidRequest;
 import net.otaupdate.app.sdk.model.DeleteOrgsOrgUuidRequest;
+import net.otaupdate.app.sdk.model.DeviceArrayItem;
 import net.otaupdate.app.sdk.model.DeviceTypeArrayItem;
 import net.otaupdate.app.sdk.model.EmailAddress;
 import net.otaupdate.app.sdk.model.FwImageArrayItem;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidDevicesRequest;
+import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidDevicesResult;
 import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidFwuploadlinkRequest;
 import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidFwuploadlinkResult;
 import net.otaupdate.app.sdk.model.GetOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesRequest;
@@ -40,6 +48,7 @@ import net.otaupdate.app.sdk.model.GetOrgsRequest;
 import net.otaupdate.app.sdk.model.GetOrgsResult;
 import net.otaupdate.app.sdk.model.OrganizationArrayItem;
 import net.otaupdate.app.sdk.model.OrganizationUserArrayItem;
+import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidDevicesRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesFwUuidResult;
 import net.otaupdate.app.sdk.model.PostOrgsOrgUuidDevtypesDevTypeUuidProctypesProcTypeUuidFwimagesRequest;
@@ -53,6 +62,7 @@ import net.otaupdate.app.sdk.model.PostOrgsOrgUuidUsersRequest;
 import net.otaupdate.app.sdk.model.PostOrgsOrgUuidUsersResult;
 import net.otaupdate.app.sdk.model.PostOrgsRequest;
 import net.otaupdate.app.sdk.model.ProcTypeArrayItem;
+import net.otaupdate.app.sdk.model.ProcessorsItem;
 import net.otaupdate.app.sdk.model.UpdateDeviceTypeRequest;
 import net.otaupdate.app.sdk.model.UpdateFwRequest;
 import net.otaupdate.app.sdk.model.UpdateProcTypeRequest;
@@ -101,6 +111,12 @@ public class ModelManager
 	{
 		public void onProgressUpdate(long totalNumBytesWrittenIn, long totalNumBytesExpected);
 		public void onCompletion(boolean wasSuccessfulIn);
+	}
+	
+	
+	public interface GetDeviceInstancesCallback
+	{
+		public void onCompletion(boolean wasSuccessfulIn, List<DeviceInstanceWrapper> devInstancesIn);
 	}
 
 
@@ -733,6 +749,137 @@ public class ModelManager
 					ModelManager.this.logger.warn(String.format("deleteFirmwareImage error: '%s", e.getMessage()));
 				}
 
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
+			}
+		});
+	}
+	
+	
+	public void getDeviceInstancesForDeviceType(DeviceTypeWrapper dtwIn, GetDeviceInstancesCallback cbIn)
+	{
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean wasSuccessful = false;
+				List<DeviceInstanceWrapper> devInstances = null;
+				try
+				{
+					GetOrgsOrgUuidDevtypesDevTypeUuidDevicesResult result = WebServicesCommon.client.getOrgsOrgUuidDevtypesDevTypeUuidDevices(new GetOrgsOrgUuidDevtypesDevTypeUuidDevicesRequest()
+							{{
+								setDevTypeUuid(dtwIn.getUuid());
+								setOrgUuid(dtwIn.getOrgUuid());
+							}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
+							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+							.build()
+							));
+					
+					// if we made it here without exception, we're good
+					wasSuccessful = (result != null);
+					
+					devInstances = new ArrayList<DeviceInstanceWrapper>();
+					for( DeviceArrayItem currDai : result.getDeviceArray() )
+					{
+						devInstances.add(new DeviceInstanceWrapper(currDai, dtwIn));
+					}
+				}
+				catch( Exception e )
+				{
+					ModelManager.this.logger.warn(String.format("getDeviceInstances error: '%s", e.getMessage()));
+				}
+				
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful, devInstances);
+			}
+		});
+	}
+	
+	
+	public void createDeviceInstance(DeviceTypeWrapper dtwIn, String devSerialNumIn, Map<ProcessorTypeWrapper, String> procSerialNumbersIn, SimpleCallback cbIn)
+	{
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean wasSuccessful = false;
+				try
+				{
+					// create our list of processors
+					List<ProcessorsItem> procs = new ArrayList<ProcessorsItem>();
+					Iterator<Entry<ProcessorTypeWrapper, String>> it = procSerialNumbersIn.entrySet().iterator();
+					while( it.hasNext() )
+					{
+						Entry<ProcessorTypeWrapper, String> currEntry = it.next();
+						
+						ProcessorsItem newItem = new ProcessorsItem();
+						newItem.setProcTypeUuid(currEntry.getKey().getUuid());
+						newItem.setSerialNumber(currEntry.getValue());
+						
+						procs.add(newItem);
+					}
+					
+					// do our post
+					WebServicesCommon.client.postOrgsOrgUuidDevtypesDevTypeUuidDevices(new PostOrgsOrgUuidDevtypesDevTypeUuidDevicesRequest()
+							{{
+								setCreateDeviceRequest(new CreateDeviceRequest() {{
+									setSerialNumber(devSerialNumIn);
+									setProcessors(procs);
+								}});
+								setDevTypeUuid(dtwIn.getUuid());
+								setOrgUuid(dtwIn.getOrgUuid());
+							}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
+							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+							.build()
+							));
+					
+					// if we made it here without exception, we're good
+					wasSuccessful = true;
+					
+				}
+				catch( Exception e )
+				{
+					ModelManager.this.logger.warn(String.format("getDeviceInstances error: '%s", e.getMessage()));
+				}
+				
+				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
+			}
+		});
+	}
+	
+	
+	public void deleteDeviceInstance(DeviceTypeWrapper dtwIn, String devSerialNumIn, SimpleCallback cbIn)
+	{
+		Dispatch.async(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean wasSuccessful = false;
+				try
+				{
+					WebServicesCommon.client.deleteOrgsOrgUuidDevtypesDevTypeUuidDevicesDevSerialNumber(new DeleteOrgsOrgUuidDevtypesDevTypeUuidDevicesDevSerialNumberRequest()
+							{{
+								setDevSerialNumber(devSerialNumIn);
+								setDevTypeUuid(dtwIn.getUuid());
+								setOrgUuid(dtwIn.getOrgUuid());
+							}}
+					.sdkRequestConfig(SdkRequestConfig.builder()
+							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
+							.build()
+							));
+					
+					// if we made it here without exception, we're good
+					wasSuccessful = true;
+					
+				}
+				catch( Exception e )
+				{
+					ModelManager.this.logger.warn(String.format("getDeviceInstances error: '%s", e.getMessage()));
+				}
+				
 				if( cbIn != null ) cbIn.onCompletion(wasSuccessful);
 			}
 		});
