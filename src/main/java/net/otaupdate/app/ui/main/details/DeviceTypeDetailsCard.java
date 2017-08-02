@@ -98,10 +98,10 @@ public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
 		tabbedPane.addTab("Configuration", null, this.devTypeConfigurationPanel, null);
 		
 		this.deployedDeviceInstancePanel = new DeployedDeviceInstancePanel();
-		tabbedPane.addTab("Deployed Instances", null, this.deployedDeviceInstancePanel, null);
+		tabbedPane.addTab("Deployed Devices", null, this.deployedDeviceInstancePanel, null);
 		
 		this.unprovDeviceInstancePanel = new UnprovisionedDeviceInstancePanel();
-		tabbedPane.addTab("Unprovisioned Instances", null, this.unprovDeviceInstancePanel, null);
+		tabbedPane.addTab("Unprovisioned Processors", null, this.unprovDeviceInstancePanel, null);
 	}
 
 	
