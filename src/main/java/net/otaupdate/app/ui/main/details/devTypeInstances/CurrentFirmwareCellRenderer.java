@@ -8,10 +8,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 public class CurrentFirmwareCellRenderer extends DefaultTableCellRenderer
 {
+	public static final Color COLOR_UNKNOWN = new Color(255, 215, 0);
+	public static final Color COLOR_UP_TO_DATE = new Color(152, 251, 152);
+	public static final Color COLOR_OUT_OF_DATE = Color.PINK;
 	private static final long serialVersionUID = -6693963857929102867L;
-	private static final Color COLOR_UNKNOWN = Color.ORANGE;
-	private static final Color COLOR_UP_TO_DATE = Color.GREEN;
-	private static final Color COLOR_OUT_OF_DATE = Color.RED;
 
 	
 	public static class CurrentFirmwareCellDataObject
@@ -48,11 +48,11 @@ public class CurrentFirmwareCellRenderer extends DefaultTableCellRenderer
 
         if( !cfcdo.isSet() )
         {
-        		c.setForeground(COLOR_UNKNOWN);
+        		c.setBackground(COLOR_UNKNOWN);
         }
         else if( value instanceof CurrentFirmwareCellDataObject )
         {
-        		c.setForeground( cfcdo.isUpToDate ? COLOR_UP_TO_DATE : COLOR_OUT_OF_DATE );
+        		c.setBackground( cfcdo.isUpToDate ? COLOR_UP_TO_DATE : COLOR_OUT_OF_DATE );
         }
         
         return c;

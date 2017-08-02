@@ -10,6 +10,7 @@ import net.otaupdate.app.model.ModelManager;
 import net.otaupdate.app.model.ModelManager.SimpleCallback;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 import net.otaupdate.app.ui.main.details.deviceTypeConfig.DeviceTypeConfigurationPanel;
+import net.otaupdate.app.ui.main.details.unprovDevTypeInstances.UnprovisionedDeviceInstancePanel;
 
 import com.jgoodies.forms.layout.FormSpecs;
 import javax.swing.JLabel;
@@ -35,10 +36,9 @@ public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
 	private DeviceTypeWrapper dtw = null;
 
 
-	private DeviceTypeConfigurationPanel devTypeConfigurationPanel;
-
-
+	private final DeviceTypeConfigurationPanel devTypeConfigurationPanel;
 	private final DeployedDeviceInstancePanel deployedDeviceInstancePanel;
+	private final UnprovisionedDeviceInstancePanel unprovDeviceInstancePanel;
 
 	
 	public DeviceTypeDetailsCard()
@@ -99,6 +99,9 @@ public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
 		
 		this.deployedDeviceInstancePanel = new DeployedDeviceInstancePanel();
 		tabbedPane.addTab("Deployed Instances", null, this.deployedDeviceInstancePanel, null);
+		
+		this.unprovDeviceInstancePanel = new UnprovisionedDeviceInstancePanel();
+		tabbedPane.addTab("Unprovisioned Instances", null, this.unprovDeviceInstancePanel, null);
 	}
 
 	
@@ -107,6 +110,7 @@ public class DeviceTypeDetailsCard extends JPanel implements IntelligentCard
 		this.dtw = dtwIn;
 		this.devTypeConfigurationPanel.setDeviceType(dtwIn);
 		this.deployedDeviceInstancePanel.setDeviceType(dtwIn);
+		this.unprovDeviceInstancePanel.setDeviceType(dtwIn);
 		this.refreshUi();
 	}
 	

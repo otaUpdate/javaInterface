@@ -22,6 +22,7 @@ import net.otaupdate.app.ui.main.details.devTypeInstances.ProvisionDeviceModal.P
 
 import javax.swing.JButton;
 import java.awt.FlowLayout;
+import javax.swing.JLabel;
 
 public class DeployedDeviceInstancePanel extends JPanel
 {
@@ -87,11 +88,44 @@ public class DeployedDeviceInstancePanel extends JPanel
 		add(new JScrollPane(this.table), BorderLayout.CENTER);
 		
 		JPanel panel = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
-		flowLayout.setAlignment(FlowLayout.RIGHT);
 		add(panel, BorderLayout.SOUTH);
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		JPanel pnlButtons = new JPanel();
+		panel.add(pnlButtons, BorderLayout.EAST);
+		
+		JButton btnRefreshTable = new JButton("Refresh Table");
+		pnlButtons.add(btnRefreshTable);
 		
 		JButton btnProvisionNewDevice = new JButton("Provision New Device");
+		pnlButtons.add(btnProvisionNewDevice);
+		
+		JPanel pnlLegend = new JPanel();
+		panel.add(pnlLegend, BorderLayout.WEST);
+		
+		JLabel lblLegend = new JLabel("Legend:");
+		pnlLegend.add(lblLegend);
+		
+		JPanel pnlLegendUptoDate = new JPanel();
+		pnlLegendUptoDate.setBackground(CurrentFirmwareCellRenderer.COLOR_UP_TO_DATE);
+		pnlLegend.add(pnlLegendUptoDate);
+		
+		JLabel lblNewLabel = new JLabel("UpToDate");
+		pnlLegendUptoDate.add(lblNewLabel);
+		
+		JPanel pnlLegendOutOfDate = new JPanel();
+		pnlLegendOutOfDate.setBackground(CurrentFirmwareCellRenderer.COLOR_OUT_OF_DATE);
+		pnlLegend.add(pnlLegendOutOfDate);
+		
+		JLabel lblOutofdate = new JLabel("OutOfDate");
+		pnlLegendOutOfDate.add(lblOutofdate);
+		
+		JPanel pnlLegendUnknown = new JPanel();
+		pnlLegendUnknown.setBackground(CurrentFirmwareCellRenderer.COLOR_UNKNOWN);
+		pnlLegend.add(pnlLegendUnknown);
+		
+		JLabel lblUnknown = new JLabel("Unknown");
+		pnlLegendUnknown.add(lblUnknown);
 		btnProvisionNewDevice.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -109,8 +143,6 @@ public class DeployedDeviceInstancePanel extends JPanel
 				pdm.setVisible(true);
 			}
 		});
-		
-		JButton btnRefreshTable = new JButton("Refresh Table");
 		btnRefreshTable.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -118,8 +150,6 @@ public class DeployedDeviceInstancePanel extends JPanel
 				DeployedDeviceInstancePanel.this.tableModel.refresh();
 			}
 		});
-		panel.add(btnRefreshTable);
-		panel.add(btnProvisionNewDevice);
 	}
 	
 	
