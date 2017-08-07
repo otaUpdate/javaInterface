@@ -64,6 +64,12 @@ public class UnprovisionedInstanceTableModel extends AbstractTableModel
 		});
 	}
 	
+	
+	public UnprovisionedProcessorWrapper getProcessorAtIndex(int indexIn)
+	{
+		return this.unprovisionedProcessors.get(indexIn);
+	}
+	
 
 	@Override
 	public int getRowCount()
