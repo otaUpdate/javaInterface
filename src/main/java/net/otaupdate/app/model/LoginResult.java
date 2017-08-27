@@ -38,6 +38,12 @@ public class LoginResult
 		return (this.token != null);
 	}
 
+	
+	public static LoginResult getResultWithFailedLogin()
+	{
+		return new LoginResult(null, false, null);
+	}
+	
 
 	public static LoginResult getResultWithAuthToken(String authTokenIn)
 	{

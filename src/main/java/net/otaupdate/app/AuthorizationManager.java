@@ -82,7 +82,7 @@ public class AuthorizationManager
 				AuthorizationManager.this.saveCredentials(emailAddressIn, passwordIn);
 
 				// call our callback
-				if( lcIn != null ) lcIn.onAuthorizationComplete(res, errorMessage);
+				if( lcIn != null ) lcIn.onAuthorizationComplete(res , errorMessage);
 			}
 		});
 	}
@@ -213,6 +213,7 @@ public class AuthorizationManager
 		}
 		catch( Exception e )
 		{
+			retVal = LoginResult.getResultWithFailedLogin();
 			this.logger.warn(String.format("login error: '%s'", e.toString()));
 		}
 		return retVal;
