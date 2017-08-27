@@ -104,6 +104,8 @@ public class OrgAndDevTypeTree extends JPanel
 	
 	public Object getSelectedItem()
 	{
+		if( this.tree.getLastSelectedPathComponent() == null ) return null;
+		
 		return ((DefaultMutableTreeNode)this.tree.getLastSelectedPathComponent()).getUserObject();
 	}
 	

@@ -8,6 +8,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import net.otaupdate.app.AuthorizationManager;
 import net.otaupdate.app.AuthorizationManager.LoginCallback;
+import net.otaupdate.app.model.LoginResult;
 import net.otaupdate.app.ui.cardmanager.CardManager.IntelligentCard;
 
 import com.jgoodies.forms.layout.FormSpecs;
@@ -40,7 +41,7 @@ public class LoginPanel extends JPanel implements IntelligentCard
 	public interface LoginPanelListener
 	{
 		public void onUserLoggedIn();
-		public void onUserRegistrationRequested();
+		public void onPasswordChangeRequired(String changePasswordSessionIn);
 	}
 	
 	
@@ -108,14 +109,22 @@ public class LoginPanel extends JPanel implements IntelligentCard
 						new LoginCallback()
 						{
 							@Override
-							public void onAuthorizationComplete(boolean wasSuccessfulIn, String errorMsgIn)
+							public void onAuthorizationComplete(LoginResult loginResultIn, String errorMsgIn)
 							{
-								if( wasSuccessfulIn )
+								if( loginResultIn.getWasSuccessful() )
 								{
 									// notify our listeners
 									for( LoginPanelListener currListener : LoginPanel.this.listeners )
 									{
 										currListener.onUserLoggedIn();
+									}
+								}
+								else if( loginResultIn.getNeedsPasswordReset() )
+								{
+									// notify our listeners
+									for( LoginPanelListener currListener : LoginPanel.this.listeners )
+									{
+										currListener.onPasswordChangeRequired(loginResultIn.getChangePasswordSession());
 									}
 								}
 								else
@@ -128,23 +137,9 @@ public class LoginPanel extends JPanel implements IntelligentCard
 		});
 		pnlButtons.add(btnLogin, BorderLayout.EAST);
 		
-		JButton btnRegister = new JButton("Register");
-		btnRegister.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				// notify our listeners
-				for( LoginPanelListener currListener : LoginPanel.this.listeners )
-				{
-					currListener.onUserRegistrationRequested();
-				}
-			}
-		});
-		pnlButtons.add(btnRegister, BorderLayout.WEST);
-		
 		Component horizontalGlue = Box.createHorizontalGlue();
 		add(horizontalGlue);
-		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{txtEmail, txtPassword, btnLogin, btnRegister}));
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{txtEmail, txtPassword, btnLogin}));
 	}
 	
 	

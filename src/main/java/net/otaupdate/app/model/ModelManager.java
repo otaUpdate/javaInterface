@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.opensdk.SdkRequestConfig;
 
-import net.otaupdate.app.AuthorizationManager;
 import net.otaupdate.app.WebServicesCommon;
 import net.otaupdate.app.sdk.model.CreateDeviceRequest;
 import net.otaupdate.app.sdk.model.CreateDeviceTypeRequest;
@@ -148,11 +147,7 @@ public class ModelManager
 				boolean wasSuccessful = false;
 				try
 				{
-					GetOrgsResult result = WebServicesCommon.client.getOrgs(new GetOrgsRequest().sdkRequestConfig(
-							SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					GetOrgsResult result = WebServicesCommon.client.getOrgs(new GetOrgsRequest().sdkRequestConfig(SdkRequestConfig.builder().build()));
 					List<OrganizationArrayItem> oais = result.getOrganizationArray();
 
 					for( OrganizationArrayItem currOai : oais )
@@ -215,10 +210,7 @@ public class ModelManager
 							setName(organizationNameIn);
 						}});
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -248,10 +240,7 @@ public class ModelManager
 					{{
 						setOrgUuid(orgIn.getUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -282,10 +271,7 @@ public class ModelManager
 					{{
 						setOrgUuid(organizationUuidIn);
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 					retVal = result.getOrganizationUserArray();
 					wasSuccessful = true;
 				}
@@ -317,10 +303,7 @@ public class ModelManager
 						}});
 						setOrgUuid(organizationUuidIn);
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
@@ -354,10 +337,7 @@ public class ModelManager
 						}});
 						setOrgUuid(organizationUuidIn);
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -392,10 +372,7 @@ public class ModelManager
 							setName(devNameIn);
 						}});
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -430,10 +407,7 @@ public class ModelManager
 							setName(devIn.getName());
 						}});
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -464,10 +438,7 @@ public class ModelManager
 						setDevTypeUuid(devIn.getUuid());
 						setOrgUuid(devIn.getOrgUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -503,10 +474,7 @@ public class ModelManager
 							setName(procNameIn);
 						}});
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -543,10 +511,7 @@ public class ModelManager
 							setLatestFirmwareUuid(procIn.getLatestFwImageUuid());
 						}});
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -578,10 +543,7 @@ public class ModelManager
 						setDevTypeUuid(procIn.getDevTypeUuid());
 						setOrgUuid(procIn.getOrgUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -618,10 +580,7 @@ public class ModelManager
 						setDevTypeUuid(devUuidIn);
 						setOrgUuid(orgUuidIn);
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
@@ -709,10 +668,7 @@ public class ModelManager
 						setDevTypeUuid(fwIn.getDevTypeUuid());
 						setOrgUuid(fwIn.getOrgUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
@@ -745,10 +701,7 @@ public class ModelManager
 						setDevTypeUuid(fwIn.getDevTypeUuid());
 						setOrgUuid(fwIn.getOrgUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
@@ -780,10 +733,7 @@ public class ModelManager
 						setDevTypeUuid(dtwIn.getUuid());
 						setOrgUuid(dtwIn.getOrgUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = (result != null);
@@ -839,10 +789,7 @@ public class ModelManager
 						setDevTypeUuid(dtwIn.getUuid());
 						setOrgUuid(dtwIn.getOrgUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -875,10 +822,7 @@ public class ModelManager
 						setDevTypeUuid(dtwIn.getUuid());
 						setOrgUuid(dtwIn.getOrgUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 					// if we made it here without exception, we're good
 					wasSuccessful = true;
@@ -911,10 +855,7 @@ public class ModelManager
 						setDevTypeUuid(dtwIn.getUuid());
 						setOrgUuid(dtwIn.getOrgUuid());
 					}}
-					.sdkRequestConfig(SdkRequestConfig.builder()
-							.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-							.build()
-							));
+					.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 
 					// if we made it here without exception, we're good
@@ -949,10 +890,7 @@ public class ModelManager
 		{{
 			setOrgUuid(orgUuidIn);
 		}}
-		.sdkRequestConfig(SdkRequestConfig.builder()
-				.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-				.build()
-				));
+		.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 		// if we made it here without exception, we're good
 		return result.getDeviceTypeArray();
@@ -967,10 +905,7 @@ public class ModelManager
 			setOrgUuid(orgUuidIn);
 
 		}}
-		.sdkRequestConfig(SdkRequestConfig.builder()
-				.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-				.build()
-				));
+		.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 		// if we made it here without exception, we're good
 		return result.getProcTypeArray();
@@ -985,10 +920,7 @@ public class ModelManager
 			setDevTypeUuid(devUuidIn);
 			setOrgUuid(orgUuidIn);
 		}}
-		.sdkRequestConfig(SdkRequestConfig.builder()
-				.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-				.build()
-				));
+		.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 		// if we made it here without exception, we're good
 		return result.getFwImageArray();
@@ -1007,10 +939,7 @@ public class ModelManager
 				setDevTypeUuid(devUuidIn);
 				setOrgUuid(orgUuidIn);
 			}}
-			.sdkRequestConfig(SdkRequestConfig.builder()
-					.customHeader("Authorization", String.format("Basic %s", AuthorizationManager.getSingleton().getCurrentAuthToken()))
-					.build()
-					));
+			.sdkRequestConfig(SdkRequestConfig.builder().build()));
 
 			// if we made it here without exception, we're good
 			retVal = result.getFwUploadLinkResponse().getLink();
